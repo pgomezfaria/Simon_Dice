@@ -19,7 +19,8 @@ namespace Simon_Dice
 
         private void LabelTextBox_Load(object sender, EventArgs e)
         {
-
+            Height = 100;
+            Width = 300;
         }
 
         public enum ePosicion
@@ -41,7 +42,7 @@ namespace Simon_Dice
                 if (Enum.IsDefined(typeof(ePosicion), value))
                 {
                     posicion = value;
-                    Refresh();
+                    recolocar();
                     if (CambiaPosicion != null)
                         CambiaPosicion(this, new EventArgs());
                 }
@@ -56,8 +57,15 @@ namespace Simon_Dice
             }
         }
 
+        void colocar()
+        {
+            if (separacion > 0)
+            {
+                txt.Location = new Point(lbl.Location.X + lbl.Size.Width + Separacion);
+            }
+        }
 
-        private int separacion = 0;
+        private int separacion = 50;
         [Category("Design")]
         [Description("Píxels de separación entre Label y Textbox")]
         public int Separacion
@@ -67,7 +75,7 @@ namespace Simon_Dice
                 if (value >= 0)
                 {
                     separacion = value;
-                    Refresh();
+                    colocar();
                 }
                 else
                 {
@@ -125,13 +133,9 @@ namespace Simon_Dice
             switch (posicion)
             {
                 case ePosicion.DERECHA:
-                    //Establecemos posición del componente txt
                     txt.Location = new Point(0, 0);
-                    //Establecemos ancho del Textbox (la label tiene ancho fijo)
                     txt.Width = this.Width - lbl.Width - Separacion;
-                    //Establecemos posición del componente lbl
                     lbl.Location = new Point(txt.Width + Separacion, 0);
-                    //Establecemos altura del componente
                     this.Height = Math.Max(txt.Height, lbl.Height);
                     break;
                 case ePosicion.IZQUIERDA:
