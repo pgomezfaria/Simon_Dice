@@ -29,6 +29,9 @@ namespace Simon_Dice
         }
 
         List<Modo> modo;
+        LabelTextBox labelText;
+        Modo mod;
+        int y = 50;
         private void btnJugar_Click(object sender, EventArgs e)
         {
             string[] lista = new string[3];
@@ -38,16 +41,16 @@ namespace Simon_Dice
             btnJugar.Visible = false;
             lbl.Visible = true;
 
-            int y = 50;
 
-            LabelTextBox labelText ;
+
+
             modo = new List<Modo>();
-            Modo mod;
-            for(int i=0; i<3; i++)
+
+            for (int i = 0; i < 3; i++)
             {
                 labelText = new LabelTextBox();
                 labelText.Size = new Size(20, 150);
-                labelText.Location = new Point(lbl.Location.X-20, y);
+                labelText.Location = new Point(lbl.Location.X - 20, y);
                 labelText.Tamaño = 30;
                 labelText.TextLbl = lista[i];
                 labelText.Visible = true;
@@ -61,7 +64,7 @@ namespace Simon_Dice
             }
 
             btnAceptar = new Button();
-            btnAceptar.Location = new Point(lbl.Location.X, modo[2].labelText.Location.Y+ 30);
+            btnAceptar.Location = new Point(lbl.Location.X, modo[2].labelText.Location.Y + 30);
             btnAceptar.Size = new Size(80, 30);
             btnAceptar.Text = "Aceptar";
             btnAceptar.Click += new System.EventHandler(this.btnAceptar_Click);
@@ -69,97 +72,126 @@ namespace Simon_Dice
             Controls.Add(btnAceptar);
         }
 
-        public void Comprueba(int numero)
+        public void Comprueba(int modoJuego, int numero)
         {
-            string error="";
-            int num=0;
+            string error = "";
+            int num = 0;
             try
             {
-                
-                num = Convert.ToInt32(modo[numero].labelText.TextTxt);
-                switch (numero)
+                if (modoJuego == 1)
                 {
-                    case 0:
-                        if (num < 1)
-                        {
-                            MessageBox.Show("Numero de jugadores no válido", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                            modo[numero].flag = false;
-                        }
-                        else
-                        {
-                            modo[numero].flag = true;
-                        }
-                        break;
-                    case 1:
-                        if (num < 3 || num > 8)
-                        {
-                            MessageBox.Show("Numero de botones no válido", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                            modo[numero].flag = false;
-                        }
-                        else
-                        {
-                            modo[numero].flag = true;
-                        }
-                        break;
-                    case 2:
-                        if (num < 1)
-                        {
-                            MessageBox.Show("Numero de secuencias no válida", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                            modo[numero].flag = false;
-                        }
-                        else
-                        {
-                            modo[numero].flag = true;
-                        }
+                    num = Convert.ToInt32(modo[numero].labelText.TextTxt);
+                    switch (numero)
+                    {
+                        case 0:
+                            if (num < 1)
+                            {
+                                MessageBox.Show("Numero de jugadores no válido", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                modo[numero].flag = false;
+                            }
+                            else
+                            {
+                                modo[numero].flag = true;
+                            }
+                            break;
+                        case 1:
+                            if (num < 3 || num > 8)
+                            {
+                                MessageBox.Show("Numero de botones no válido", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                modo[numero].flag = false;
+                            }
+                            else
+                            {
+                                modo[numero].flag = true;
+                            }
+                            break;
+                        case 2:
+                            if (num < 1)
+                            {
+                                MessageBox.Show("Numero de secuencias no válida", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                modo[numero].flag = false;
+                            }
+                            else
+                            {
+                                modo[numero].flag = true;
+                            }
 
-                        break;
+                            break;
+                    }
                 }
+                else
+                {
+                    if (modo[numero].labelText.TextTxt == "")
+                    {
+                        throw new FormatException();
+                    }
+                    else
+                    {
+                        modo[numero].flag = true;
+                    }
+                }
+                
             }
             catch (OverflowException)
             {
-                modo[numero].flag = false;
-                switch (numero)
+                if (modoJuego == 1)
                 {
-                    case 0:
-                        error = "Numero de jugadores elevado";                       
-                        break;
-                    case 1:
-                        error="Numero de botones elevado";
-                        break;
-                    case 2:
-                        error="Numero de secuencias elevada";
-                        break;
+                    modo[numero].flag = false;
+                    switch (numero)
+                    {
+                        case 0:
+                            error = "Numero de jugadores elevado";
+                            break;
+                        case 1:
+                            error = "Numero de botones elevado";
+                            break;
+                        case 2:
+                            error = "Numero de secuencias elevada";
+                            break;
+                    }
+                    MessageBox.Show(error, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
-                MessageBox.Show(error, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    
             }
             catch (FormatException)
             {
-                modo[numero].flag = false;
-                switch (numero)
+                if (modoJuego == 1)
                 {
-                    case 0:
-                        error="Numero de jugadores no valido";
-                        break;
-                    case 1:
-                        error= "Numero de botones no valido";
-                        break;
-                    case 2:
-                        error= "Numero de secuencias no valido";
-                        break;
+                    modo[numero].flag = false;
+                    switch (numero)
+                    {
+                        case 0:
+                            error = "Numero de jugadores no valido";
+                            break;
+                        case 1:
+                            error = "Numero de botones no valido";
+                            break;
+                        case 2:
+                            error = "Numero de secuencias no valido";
+                            break;
+                    }
+                    MessageBox.Show(error, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
-                MessageBox.Show(error, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                else
+                {
+                    modo[numero].flag = false;
+                    int jugador=numero+1;
+                    MessageBox.Show("Jugador " +jugador+" no válido", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    
+                }
+                    
             }
         }
         private void btnAceptar_Click(object sender, EventArgs e)
         {
-            for(int i=0; i<3; i++)
+            for (int i = 0; i < 3; i++)
             {
-                Comprueba(i);
+                Comprueba(1,i);
             }
-            if(modo[0].flag==true && modo[1].flag == true && modo[2].flag == true)
+            if (modo[0].flag == true && modo[1].flag == true && modo[2].flag == true)
             {
-                
-                for(int i=0; i<3; i++)
+
+                for (int i = 0; i < 3; i++)
                 {
                     modo[i].labelText.Visible = false;
                 }
@@ -167,11 +199,80 @@ namespace Simon_Dice
                 Jugadores();
             }
         }
-
+        Button btnAcept;
         public void Jugadores()
         {
+            y = 50;
+            int num = Convert.ToInt32(modo[0].labelText.TextTxt);
+            modo.Clear();
+            int j = 1;
+            for (int i = 0; i < num; i++)
+            {
+                labelText = new LabelTextBox();
+                labelText.Size = new Size(20, 150);
+                labelText.Location = new Point(lbl.Location.X - 20, y);
+                labelText.Tamaño = 60;
+                labelText.TextLbl = "Jugador " + j;
+                labelText.Visible = true;
+                labelText.Separacion = 10;
+                Controls.Add(labelText);
+                y += 30;
+                mod = new Modo(labelText, false);
+                modo.Add(mod);
+                j++;
+            }
 
+            btnAcept = new Button();
+            btnAcept.Location = new Point(lbl.Location.X, modo[num-1].labelText.Location.Y + 30);
+            btnAcept.Size = new Size(80, 30);
+            btnAcept.Text = "Aceptar";
+            btnAcept.Click += new System.EventHandler(this.btnAcept_Click);
+            btnAcept.Visible = true;
+            Controls.Add(btnAcept);
+        }
+        List<Jugador> jugadores;
+        Jugador jugador;
+        List<Color> colores;
+        private void btnAcept_Click(object sender, EventArgs e)
+        {
+            bool flag = false;
+
+            for(int i=0; i<modo.Count; i++)
+            {
+                Comprueba(2, i);
+            }
+            for(int i=0; i<modo.Count; i++)
+            {
+                if (modo[i].flag == false)
+                {
+                    flag = false;
+                    break;
+                }
+                else
+                {
+                    flag = true;
+                }
+            }
+            if (flag)
+            {
+                Juego();
+            }
+            
         }
 
+        public void Juego()
+        {
+            jugadores = new List<Jugador>();
+            for(int i=0; i<modo.Count; i++)
+            {
+                colores = new List<Color>();
+                jugador = new Jugador(modo[i].labelText.TextTxt, colores, 0);
+                jugadores.Add(jugador);
+                modo[i].labelText.Visible = false;
+            }
+            
+            modo.Clear();
+            btnAcept.Visible = false;
         }
+    }
 }
