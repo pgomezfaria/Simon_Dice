@@ -71,7 +71,7 @@ namespace Simon_Dice
             btnAceptar.Visible = true;
             Controls.Add(btnAceptar);
         }
-
+        int numBotones;
         public void Comprueba(int modoJuego, int numero)
         {
             string error = "";
@@ -88,6 +88,7 @@ namespace Simon_Dice
                             {
                                 MessageBox.Show("Numero de jugadores no válido", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                                 modo[numero].flag = false;
+                                
                             }
                             else
                             {
@@ -103,6 +104,7 @@ namespace Simon_Dice
                             else
                             {
                                 modo[numero].flag = true;
+                                numBotones = num;
                             }
                             break;
                         case 2:
@@ -260,8 +262,25 @@ namespace Simon_Dice
             
         }
 
+        Button botonesJuego;
+        List<Color> coloresBoton;
+        List<Button> listaBotones;
+        Color color;
+        Timer timer;
         public void Juego()
         {
+            listaBotones = new List<Button>();
+            coloresBoton = new List<Color>();
+
+            coloresBoton.Add(Color.Red);
+            coloresBoton.Add(Color.Green);
+            coloresBoton.Add(Color.Blue);
+            coloresBoton.Add(Color.Black);
+            coloresBoton.Add(Color.Yellow);
+            coloresBoton.Add(Color.Brown);
+            coloresBoton.Add(Color.Pink);
+            coloresBoton.Add(Color.Orange);
+
             jugadores = new List<Jugador>();
             for(int i=0; i<modo.Count; i++)
             {
@@ -273,6 +292,58 @@ namespace Simon_Dice
             
             modo.Clear();
             btnAcept.Visible = false;
+            int x = 200, y=80, j=1;
+            for (int i = 0; i < numBotones; i++)
+            {
+                botonesJuego = new Button();
+                botonesJuego.Size = new Size(80, 50);
+                botonesJuego.Location = new Point(x, y);
+                botonesJuego.BackColor = coloresBoton[i];
+                botonesJuego.Click += new System.EventHandler(this.b_Click);
+                if (j % 2 == 0)
+                {
+                    y += 100;
+                    x = 200;
+                }
+                else
+                {
+                    x += 200;
+                }
+                j++;
+                Controls.Add(botonesJuego);
+                listaBotones.Add(botonesJuego);
+            }
+        }
+        int pos;
+        public void b_Click(object sender, System.EventArgs e)
+        {
+            
+            color = ((Button)sender).BackColor;
+            pos= coloresBoton.IndexOf(color);
+
+            timer = new Timer();
+            timer.Enabled = true;
+            timer.Interval = 500;
+            timer.Tick += new EventHandler(CambiaColor);
+            timer.Start();
+
+        }
+        public int cont = 0;
+        public void CambiaColor(object sender, EventArgs e)
+        {
+
+            if (cont % 2 == 0)
+            {
+                listaBotones[pos].BackColor = Color.Transparent;
+                cont++;
+            }
+            else
+            {
+                listaBotones[pos].BackColor = color;
+                cont = 0;
+                timer.Enabled = false;
+            }
+
         }
     }
 }
