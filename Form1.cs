@@ -5,6 +5,7 @@ using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -32,6 +33,8 @@ namespace Simon_Dice
         LabelTextBox labelText;
         Modo mod;
         int y = 50;
+
+        int numSecu;
         private void btnJugar_Click(object sender, EventArgs e)
         {
             string[] lista = new string[3];
@@ -40,10 +43,6 @@ namespace Simon_Dice
             lista[2] = "n º secuencias";
             btnJugar.Visible = false;
             lbl.Visible = true;
-
-
-
-
             modo = new List<Modo>();
 
             for (int i = 0; i < 3; i++)
@@ -116,6 +115,7 @@ namespace Simon_Dice
                             else
                             {
                                 modo[numero].flag = true;
+                                numSecu = num;
                             }
 
                             break;
@@ -232,7 +232,7 @@ namespace Simon_Dice
             btnAcept.Visible = true;
             Controls.Add(btnAcept);
         }
-        List<Jugador> jugadores;
+        static List<Jugador> jugadores;
         Jugador jugador;
         List<Color> colores;
         private void btnAcept_Click(object sender, EventArgs e)
@@ -263,10 +263,11 @@ namespace Simon_Dice
         }
 
         Button botonesJuego;
-        List<Color> coloresBoton;
-        List<Button> listaBotones;
+        static List<Color> coloresBoton;
+       static List<Button> listaBotones;
         Color color;
-        Timer timer;
+        //Timer timer;
+        Button secuencia;
         public void Juego()
         {
             listaBotones = new List<Button>();
@@ -313,37 +314,89 @@ namespace Simon_Dice
                 Controls.Add(botonesJuego);
                 listaBotones.Add(botonesJuego);
             }
+
+            secuencia = new Button();
+            secuencia.Size = new Size(80, 40);
+            secuencia.Location = new Point(lbl.Location.X+50, listaBotones[numBotones-1].Location.Y + 100);
+            secuencia.Text = "Nueva secuencia";
+            secuencia.Click += new EventHandler(this.secuencia_Click);
+            Controls.Add(secuencia);
+            listaSecuencias = new List<int>();
         }
-        int pos;
+        static int pos;
         public void b_Click(object sender, System.EventArgs e)
         {
             
             color = ((Button)sender).BackColor;
             pos= coloresBoton.IndexOf(color);
 
-            timer = new Timer();
-            timer.Enabled = true;
-            timer.Interval = 500;
-            timer.Tick += new EventHandler(CambiaColor);
-            timer.Start();
-
+            hilo = new Thread(CambiaColor);
+            hilo.Start();
         }
-        public int cont = 0;
-        public void CambiaColor(object sender, EventArgs e)
-        {
+       static List<int> listaSecuencias;
+        Thread hilo;
 
-            if (cont % 2 == 0)
+       static bool flag = false;
+        public void secuencia_Click(object sender, EventArgs e)
+        {
+            int num;
+            
+            Random random = new Random();
+            flag = false;
+            for(int i=0; i<numSecu; i++)
             {
-                listaBotones[pos].BackColor = Color.Transparent;
+                num = random.Next(0, numBotones);
+                listaSecuencias.Add(num);              
+            }
+            for(int i=0; i<listaSecuencias.Count; i++)
+            {
+                pos = listaSecuencias[i];
+                hilo = new Thread(CambiaColor);
+                hilo.Start();
+                hilo.Join();
+                Thread.Sleep(500);              
+            }
+
+            secuencia.Visible = false;
+            flag = true;
+
+            lbl.Text = "Turno de: "+jugadores[numJugador].nombre;
+        }
+        
+        static int cont = 0, numJugador=0;
+
+        static void CambiaColor()
+        {
+            for (int j = 0; j < 2; j++)
+            {
+                if (j % 2 == 0)
+                {
+                    listaBotones[pos].BackColor = Color.Transparent;
+                }
+                else
+                {
+                    listaBotones[pos].BackColor = coloresBoton[pos];
+                }
+                Thread.Sleep(500);
+            }
+
+            if (flag)
+            {
+                if (pos == listaSecuencias[cont])
+                {
+                    jugadores[numJugador].punt++;
+                    Console.WriteLine(jugadores[numJugador].punt);
+                }
+                else
+                {
+                    MessageBox.Show("Se ha equivocado de secuencia", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
                 cont++;
             }
-            else
-            {
-                listaBotones[pos].BackColor = color;
-                cont = 0;
-                timer.Enabled = false;
-            }
 
         }
+        
+
+
     }
 }
