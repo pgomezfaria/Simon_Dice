@@ -27,6 +27,12 @@ namespace Simon_Dice
             Controls.Add(btnJugar);
             lbl.Location = new Point(Width / 2 - lbl.Width, Height * 2 / 15 - lbl.Height);
             lbl.Visible = false;
+            label = new Label();
+            label.Size = new Size(63, 13);
+            label.Location = new Point(Width / 2 - label.Width, Height * 2 / 15 - label.Height);
+            
+            label.Visible = false;
+            Controls.Add(label);
         }
 
         List<Modo> modo;
@@ -267,7 +273,7 @@ namespace Simon_Dice
        static List<Button> listaBotones;
         Color color;
         //Timer timer;
-        Button secuencia;
+        static Button secuencia;
         public void Juego()
         {
             listaBotones = new List<Button>();
@@ -322,6 +328,9 @@ namespace Simon_Dice
             secuencia.Click += new EventHandler(this.secuencia_Click);
             Controls.Add(secuencia);
             listaSecuencias = new List<int>();
+
+            label.Visible = false;
+            Console.WriteLine("Turno para: " + jugadores[numJugador].nombre);
         }
         static int pos;
         public void b_Click(object sender, System.EventArgs e)
@@ -332,6 +341,11 @@ namespace Simon_Dice
 
             hilo = new Thread(CambiaColor);
             hilo.Start();
+            if (bandera)
+            {
+                secuencia.Visible = true;
+            }
+            
         }
        static List<int> listaSecuencias;
         Thread hilo;
@@ -340,9 +354,8 @@ namespace Simon_Dice
         public void secuencia_Click(object sender, EventArgs e)
         {
             int num;
-            
+            bandera = false;
             Random random = new Random();
-            flag = false;
             for(int i=0; i<numSecu; i++)
             {
                 num = random.Next(0, numBotones);
@@ -358,14 +371,19 @@ namespace Simon_Dice
             }
 
             secuencia.Visible = false;
-            flag = true;
-
-            lbl.Text = "Turno de: "+jugadores[numJugador].nombre;
+ 
+            
+            MuestraMensaje("Turno para: " + jugadores[numJugador].nombre);
         }
-        
-        static int cont = 0, numJugador=0;
 
-        static void CambiaColor()
+        static void MuestraMensaje(string msg)
+        {
+            MessageBox.Show(msg, "Simon dice", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+        bool bandera;
+        static int cont = 0, numJugador=0;
+        Label label;
+        public void CambiaColor()
         {
             for (int j = 0; j < 2; j++)
             {
@@ -384,14 +402,32 @@ namespace Simon_Dice
             {
                 if (pos == listaSecuencias[cont])
                 {
+                    int x = listaSecuencias.Count - 1;
                     jugadores[numJugador].punt++;
-                    Console.WriteLine(jugadores[numJugador].punt);
+                    
+                    if (listaSecuencias.Count - 1 == cont)
+                    {
+                        cont = -1;
+                        numJugador++;
+                        
+                        if (jugadores.Count - 1 == numJugador)
+                        {
+                            numJugador = 0;
+                            bandera = true;
+                        }
+                        else
+                        {
+                            MuestraMensaje("Turno para: " + jugadores[numJugador].nombre);
+                        }
+                        
+                    }
                 }
                 else
                 {
                     MessageBox.Show("Se ha equivocado de secuencia", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
                 cont++;
+                
             }
 
         }
