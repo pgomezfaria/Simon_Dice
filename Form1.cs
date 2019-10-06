@@ -27,12 +27,7 @@ namespace Simon_Dice
             Controls.Add(btnJugar);
             lbl.Location = new Point(Width / 2 - lbl.Width, Height * 2 / 15 - lbl.Height);
             lbl.Visible = false;
-            label = new Label();
-            label.Size = new Size(63, 13);
-            label.Location = new Point(Width / 2 - label.Width, Height * 2 / 15 - label.Height);
-            
-            label.Visible = false;
-            Controls.Add(label);
+
         }
 
         List<Modo> modo;
@@ -91,7 +86,8 @@ namespace Simon_Dice
                         case 0:
                             if (num < 1)
                             {
-                                MessageBox.Show("Numero de jugadores no válido", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                MuestraMensaje("Numero de jugadores no válido", 1);
+                                
                                 modo[numero].flag = false;
                                 
                             }
@@ -103,7 +99,7 @@ namespace Simon_Dice
                         case 1:
                             if (num < 3 || num > 8)
                             {
-                                MessageBox.Show("Numero de botones no válido", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                MuestraMensaje("Numero de botones no válido", 1);                
                                 modo[numero].flag = false;
                             }
                             else
@@ -115,7 +111,7 @@ namespace Simon_Dice
                         case 2:
                             if (num < 1)
                             {
-                                MessageBox.Show("Numero de secuencias no válida", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                MuestraMensaje("Numero de secuencias no válida", 1);                             
                                 modo[numero].flag = false;
                             }
                             else
@@ -157,7 +153,8 @@ namespace Simon_Dice
                             error = "Numero de secuencias elevada";
                             break;
                     }
-                    MessageBox.Show(error, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MuestraMensaje(error, 1);
+                    
                 }
                     
             }
@@ -178,14 +175,15 @@ namespace Simon_Dice
                             error = "Numero de secuencias no valido";
                             break;
                     }
-                    MessageBox.Show(error, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MuestraMensaje(error, 1);
+                    
                 }
                 else
                 {
                     modo[numero].flag = false;
                     int jugador=numero+1;
-                    MessageBox.Show("Jugador " +jugador+" no válido", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    
+                    MuestraMensaje("Jugador " + jugador + " no válido", 1);
+                                      
                 }
                     
             }
@@ -263,14 +261,17 @@ namespace Simon_Dice
             }
             if (flag)
             {
+                lbl.Visible = false;
                 Juego();
+                
             }
             
         }
 
         Button botonesJuego;
-        static List<Color> coloresBoton;
-       static List<Button> listaBotones;
+         List<Color> coloresBoton;
+        List<Button> listaBotones;
+        List<Jugador> jugadoresEliminados;
         Color color;
         //Timer timer;
         static Button secuencia;
@@ -278,7 +279,7 @@ namespace Simon_Dice
         {
             listaBotones = new List<Button>();
             coloresBoton = new List<Color>();
-
+            jugadoresEliminados = new List<Jugador>();
             coloresBoton.Add(Color.Red);
             coloresBoton.Add(Color.Green);
             coloresBoton.Add(Color.Blue);
@@ -328,11 +329,10 @@ namespace Simon_Dice
             secuencia.Click += new EventHandler(this.secuencia_Click);
             Controls.Add(secuencia);
             listaSecuencias = new List<int>();
-
-            label.Visible = false;
-            Console.WriteLine("Turno para: " + jugadores[numJugador].nombre);
+                 
         }
         static int pos;
+        bool banderaEliminados = false;
         public void b_Click(object sender, System.EventArgs e)
         {
             
@@ -341,20 +341,27 @@ namespace Simon_Dice
 
             hilo = new Thread(CambiaColor);
             hilo.Start();
-            if (bandera)
+            hilo.Join();
+            if (banderaSecuencia)
             {
                 secuencia.Visible = true;
             }
-            
+            if (banderaEliminados)
+            {
+                for(int i=0; i<listaBotones.Count; i++)
+                {
+                    listaBotones[i].Visible = false;
+                }
+            }
         }
        static List<int> listaSecuencias;
         Thread hilo;
 
-       static bool flag = false;
+       static bool banderaPulsarBoton = false;
         public void secuencia_Click(object sender, EventArgs e)
         {
             int num;
-            bandera = false;
+            banderaSecuencia = false;
             Random random = new Random();
             for(int i=0; i<numSecu; i++)
             {
@@ -371,18 +378,27 @@ namespace Simon_Dice
             }
 
             secuencia.Visible = false;
- 
-            
-            MuestraMensaje("Turno para: " + jugadores[numJugador].nombre);
+
+            banderaPulsarBoton = true;
+            MuestraMensaje("Turno para: " + jugadores[numJugador].nombre, 0);
         }
 
-        static void MuestraMensaje(string msg)
+        static void MuestraMensaje(string msg, int num)
         {
-            MessageBox.Show(msg, "Simon dice", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            if (num == 0)
+            {
+                MessageBox.Show(msg, "Simon dice", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            else
+            {
+                MessageBox.Show(msg, "Simon dice", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            
         }
-        bool bandera;
+
+        bool banderaSecuencia;
         static int cont = 0, numJugador=0;
-        Label label;
+        
         public void CambiaColor()
         {
             for (int j = 0; j < 2; j++)
@@ -398,33 +414,64 @@ namespace Simon_Dice
                 Thread.Sleep(500);
             }
 
-            if (flag)
+            if (banderaPulsarBoton)
             {
+
                 if (pos == listaSecuencias[cont])
                 {
                     int x = listaSecuencias.Count - 1;
                     jugadores[numJugador].punt++;
-                    
+                   
+
                     if (listaSecuencias.Count - 1 == cont)
                     {
                         cont = -1;
                         numJugador++;
                         
-                        if (jugadores.Count - 1 == numJugador)
+                        if (jugadores.Count == numJugador)
                         {
                             numJugador = 0;
-                            bandera = true;
+                            banderaSecuencia = true;
+                            banderaPulsarBoton = false;
+
+
                         }
                         else
                         {
-                            MuestraMensaje("Turno para: " + jugadores[numJugador].nombre);
+                            MuestraMensaje("Turno para: " + jugadores[numJugador].nombre,0);
                         }
+                        
                         
                     }
                 }
                 else
                 {
-                    MessageBox.Show("Se ha equivocado de secuencia", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    cont = -1;
+                    MuestraMensaje("Se ha equivocado de secuencia", 1);    
+                    
+                    jugadoresEliminados.Add(jugadores[numJugador]);
+                    jugadores.Remove(jugadores[numJugador]);
+
+                    if (jugadores.Count < 1)
+                    {
+                        MuestraMensaje("Todos los jugadores han perdido", 0);
+                        banderaPulsarBoton = false;
+                    }
+                    else
+                    {
+                        if (jugadores.Count != numJugador)
+                        {
+                            MuestraMensaje("Turno para: " + jugadores[numJugador].nombre, 0);
+                            banderaEliminados = true;
+                            banderaSecuencia = false;
+                        }
+                        else
+                        {
+                            banderaSecuencia = true;
+                            banderaPulsarBoton = false;
+                            numJugador = 0;
+                        }
+                    }
                 }
                 cont++;
                 
