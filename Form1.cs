@@ -27,7 +27,7 @@ namespace Simon_Dice
             Controls.Add(btnJugar);
             lbl.Location = new Point(Width / 2 - lbl.Width, Height * 2 / 15 - lbl.Height);
             lbl.Visible = false;
-
+            checkBox1.Visible = false;
         }
 
         List<Modo> modo;
@@ -38,6 +38,9 @@ namespace Simon_Dice
         int numSecu;
         private void btnJugar_Click(object sender, EventArgs e)
         {
+            checkBox1.Location = new Point(lbl.Location.X + 80, lbl.Location.Y);
+            checkBox1.Visible = true;
+
             string[] lista = new string[3];
             lista[0] = "nº jugadores";
             lista[1] = "nº botones(3-8)";
@@ -206,8 +209,19 @@ namespace Simon_Dice
             }
         }
         Button btnAcept;
+        bool flagChecked = false;
         public void Jugadores()
         {
+            if (checkBox1.Checked)
+            {
+                flagChecked = true;
+            }
+            else
+            {
+                flagChecked = false;
+            }
+            checkBox1.Visible = false;
+            
             y = 50;
             int num = Convert.ToInt32(modo[0].labelText.TextTxt);
             modo.Clear();
@@ -322,12 +336,16 @@ namespace Simon_Dice
                 listaBotones.Add(botonesJuego);
             }
 
-            secuencia = new Button();
-            secuencia.Size = new Size(80, 40);
-            secuencia.Location = new Point(lbl.Location.X+50, listaBotones[numBotones-1].Location.Y + 100);
-            secuencia.Text = "Nueva secuencia";
-            secuencia.Click += new EventHandler(this.secuencia_Click);
-            Controls.Add(secuencia);
+            if (flagChecked==false)
+            {
+                secuencia = new Button();
+                secuencia.Size = new Size(80, 40);
+                secuencia.Location = new Point(lbl.Location.X + 50, listaBotones[numBotones - 1].Location.Y + 100);
+                secuencia.Text = "Nueva secuencia";
+                secuencia.Click += new EventHandler(this.secuencia_Click);
+                Controls.Add(secuencia);
+            }
+            
             listaSecuencias = new List<int>();
                  
         }
@@ -342,6 +360,18 @@ namespace Simon_Dice
             hilo = new Thread(CambiaColor);
             hilo.Start();
             hilo.Join();
+
+            if (flagChecked)
+            {
+                if (listaSecuencias.Count < 1)
+                {
+                    listaSecuencias.Add(pos);
+                }
+                else
+                {
+
+                }
+            }
             if (banderaSecuencia)
             {
                 secuencia.Visible = true;
