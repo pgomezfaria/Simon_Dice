@@ -350,28 +350,38 @@ namespace Simon_Dice
                  
         }
         static int pos;
-        bool banderaEliminados = false;
+        bool banderaEliminados = false, secu=false;
         public void b_Click(object sender, System.EventArgs e)
         {
             
             color = ((Button)sender).BackColor;
             pos= coloresBoton.IndexOf(color);
 
-            hilo = new Thread(CambiaColor);
-            hilo.Start();
-            hilo.Join();
-
             if (flagChecked)
             {
                 if (listaSecuencias.Count < 1)
                 {
                     listaSecuencias.Add(pos);
+                    secu = false;
+                    flagsubita = false;
                 }
                 else
                 {
-
+                    secu = true;
+                    flagsubita = true;
                 }
             }
+            else
+            {
+                secu = true;
+                flagsubita = false;
+            }
+
+            hilo = new Thread(CambiaColor);
+            hilo.Start();
+            hilo.Join();
+
+            
             if (banderaSecuencia)
             {
                 secuencia.Visible = true;
@@ -426,8 +436,8 @@ namespace Simon_Dice
             
         }
 
-        bool banderaSecuencia;
-        static int cont = 0, numJugador=0;
+        bool banderaSecuencia, flagsubita = false, flagañadir = false;
+        static int cont = 0, numJugador=0, contSecuencias=0;
         
         public void CambiaColor()
         {
@@ -444,72 +454,95 @@ namespace Simon_Dice
                 Thread.Sleep(500);
             }
 
-            if (banderaPulsarBoton)
+            if (secu)
             {
-
-                if (pos == listaSecuencias[cont])
-                {
-                    int x = listaSecuencias.Count - 1;
-                    jugadores[numJugador].punt++;
-                   
-
-                    if (listaSecuencias.Count - 1 == cont)
-                    {
-                        cont = -1;
-                        numJugador++;
-                        
-                        if (jugadores.Count == numJugador)
-                        {
-                            numJugador = 0;
-                            banderaSecuencia = true;
-                            banderaPulsarBoton = false;
-
-
-                        }
-                        else
-                        {
-                            MuestraMensaje("Turno para: " + jugadores[numJugador].nombre,0);
-                        }
-                        
-                        
-                    }
-                }
-                else
-                {
-                    cont = -1;
-                    MuestraMensaje("Se ha equivocado de secuencia", 1);    
-                    
-                    jugadoresEliminados.Add(jugadores[numJugador]);
-                    jugadores.Remove(jugadores[numJugador]);
-
-                    if (jugadores.Count < 1)
-                    {
-                        MuestraMensaje("Todos los jugadores han perdido", 0);
-                        banderaPulsarBoton = false;
-                    }
-                    else
-                    {
-                        if (jugadores.Count != numJugador)
-                        {
-                            MuestraMensaje("Turno para: " + jugadores[numJugador].nombre, 0);
-                            banderaEliminados = true;
-                            banderaSecuencia = false;
-                        }
-                        else
-                        {
-                            banderaSecuencia = true;
-                            banderaPulsarBoton = false;
-                            numJugador = 0;
-                        }
-                    }
-                }
-                cont++;
-                
+                CompuebaBoton();
             }
+            
 
         }
         
+        public void CompuebaBoton()
+        {
+            if (flagañadir)
+            {
+                listaSecuencias.Add(pos);
+                contSecuencias++;
+                if (contSecuencias == numSecu)
+                {
+                    flagañadir = false;
+                }
+            }
+            else
+            {
+                if (banderaPulsarBoton)
+                {
 
+                    if (pos == listaSecuencias[cont])
+                    {
+                        int x = listaSecuencias.Count - 1;
+                        jugadores[numJugador].punt++;
+
+
+                        if (listaSecuencias.Count - 1 == cont)
+                        {
+                            cont = -1;
+                            numJugador++;
+
+                            if (jugadores.Count == numJugador)
+                            {
+                                numJugador = 0;
+                                banderaSecuencia = true;
+                                banderaPulsarBoton = false;
+                                if (flagsubita)
+                                {
+                                    flagañadir = true;
+                                }
+                            }
+                            else
+                            {
+                                MuestraMensaje("Turno para: " + jugadores[numJugador].nombre, 0);
+                            }
+
+
+                        }
+                    }
+                    else
+                    {
+                        cont = -1;
+                        MuestraMensaje("Se ha equivocado de secuencia", 1);
+
+                        jugadoresEliminados.Add(jugadores[numJugador]);
+                        jugadores.Remove(jugadores[numJugador]);
+
+                        if (jugadores.Count < 1)
+                        {
+                            MuestraMensaje("Todos los jugadores han perdido", 0);
+                            banderaPulsarBoton = false;
+                            banderaEliminados = true;
+                        }
+                        else
+                        {
+                            if (jugadores.Count != numJugador)
+                            {
+                                MuestraMensaje("Turno para: " + jugadores[numJugador].nombre, 0);
+                                banderaEliminados = false;
+                                banderaSecuencia = false;
+                            }
+                            else
+                            {
+                                banderaSecuencia = true;
+                                banderaPulsarBoton = false;
+                                numJugador = 0;
+                            }
+                        }
+                    }
+                    cont++;
+
+                }
+            }
+            
+        }
 
     }
 }
