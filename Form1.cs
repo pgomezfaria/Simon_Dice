@@ -345,6 +345,11 @@ namespace Simon_Dice
                 secuencia.Click += new EventHandler(this.secuencia_Click);
                 Controls.Add(secuencia);
             }
+            else
+            {
+                MuestraMensaje("Turno para: " + jugadores[numJugador].nombre, 0);
+                banderaSecuencia = false;
+            }
             
             listaSecuencias = new List<int>();
                  
@@ -361,14 +366,17 @@ namespace Simon_Dice
             {
                 if (listaSecuencias.Count < 1)
                 {
+                    numJugador++;
                     listaSecuencias.Add(pos);
                     secu = false;
                     flagsubita = false;
+                    MuestraMensaje("Turno para: " + jugadores[numJugador].nombre, 0);
                 }
                 else
                 {
                     secu = true;
                     flagsubita = true;
+                    banderaPulsarBoton = true;
                 }
             }
             else
@@ -471,7 +479,11 @@ namespace Simon_Dice
                 if (contSecuencias == numSecu)
                 {
                     flagañadir = false;
+                    numJugador++;
+                    banderaPulsarBoton = true;
+                    MuestraMensaje("Turno para: " + jugadores[numJugador].nombre, 0);
                 }
+                
             }
             else
             {
@@ -484,7 +496,7 @@ namespace Simon_Dice
                         jugadores[numJugador].punt++;
 
 
-                        if (listaSecuencias.Count - 1 == cont)
+                        if (x == cont)
                         {
                             cont = -1;
                             numJugador++;
@@ -492,10 +504,15 @@ namespace Simon_Dice
                             if (jugadores.Count == numJugador)
                             {
                                 numJugador = 0;
-                                banderaSecuencia = true;
+                                if (flagChecked == false)
+                                {
+                                    banderaSecuencia = true;
+                                }
+                                
                                 banderaPulsarBoton = false;
                                 if (flagsubita)
                                 {
+                                    MuestraMensaje("Escoja nueva secuencia", 0);
                                     flagañadir = true;
                                 }
                             }
@@ -523,18 +540,34 @@ namespace Simon_Dice
                         }
                         else
                         {
-                            if (jugadores.Count != numJugador)
+                            if (flagChecked)
                             {
-                                MuestraMensaje("Turno para: " + jugadores[numJugador].nombre, 0);
-                                banderaEliminados = false;
-                                banderaSecuencia = false;
+                                if (numJugador == jugadores.Count)
+                                {
+                                    numJugador = 0;
+                                }
+                                MuestraMensaje("Turno para: " + jugadores[numJugador].nombre,0);
                             }
                             else
                             {
-                                banderaSecuencia = true;
-                                banderaPulsarBoton = false;
-                                numJugador = 0;
+                                if (jugadores.Count != numJugador)
+                                {
+                                    MuestraMensaje("Turno para: " + jugadores[numJugador].nombre, 0);
+                                    banderaEliminados = false;
+                                    banderaSecuencia = false;
+                                }
+                                else
+                                {
+                                    if (flagChecked == false)
+                                    {
+                                        banderaSecuencia = true;
+                                    }
+
+                                    banderaPulsarBoton = false;
+                                    numJugador = 0;
+                                }
                             }
+                            
                         }
                     }
                     cont++;
