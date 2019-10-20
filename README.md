@@ -4,3 +4,5 @@
 -7 de octubre: el modo básico del juego se ha realizado. A continuacion , comienzo con el modo muerte súbita, donde los jugadores escogen las secuencias.
 
 -'8 de octubre: el modo  "muerte súbita" se ha realizado.  Comienzo con  el guargado de puntuaciones'.
+
+-20 de octubre: realizado la inserción de datos (nombre, puntuacion y fecha) en una base de datos y se pueden ver las puntuaciones en un segundo formulario en una opción del Tool Strip Menu. En este último, también está la opción de empezar una nueva partida, preguntando previamente confirmación.
