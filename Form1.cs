@@ -1,7 +1,11 @@
-﻿using System;
+﻿using MySql.Data.MySqlClient;
+using OfficeOpenXml.FormulaParsing.Excel.Functions.DateTime;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Data.OleDb;
+using System.Data.SqlClient;
 using System.Drawing;
 using System.Linq;
 using System.Text;
@@ -28,6 +32,8 @@ namespace Simon_Dice
             lbl.Location = new Point(Width / 2 - lbl.Width-20, 20);
             lbl.Visible = false;
             checkBox1.Visible = false;
+            
+
         }
 
         List<Modo> modo;
@@ -36,43 +42,121 @@ namespace Simon_Dice
         int y = 50;
 
         int numSecu;
+        bool nuevaPartida = true;
         private void btnJugar_Click(object sender, EventArgs e)
         {
-            checkBox1.Location = new Point(lbl.Location.X + 80, lbl.Location.Y);
-            checkBox1.Visible = true;
-
-            string[] lista = new string[3];
-            lista[0] = "nº jugadores";
-            lista[1] = "nº botones(3-8)";
-            lista[2] = "n º secuencias";
-            btnJugar.Visible = false;
-            lbl.Visible = true;
-            modo = new List<Modo>();
-            y = lbl.Location.Y + 20;
-            for (int i = 0; i < 3; i++)
+            if(sender.ToString()=="&Nueva partida")
             {
-                labelText = new LabelTextBox();
-                labelText.Size = new Size(20, 150);
-                labelText.Location = new Point(lbl.Location.X - 20, y);
-                labelText.Tamaño = 30;
-                labelText.TextLbl = lista[i];
-                labelText.Visible = true;
-                labelText.Separacion = 10;
-
-                Controls.Add(labelText);
-                y += 30;
-
-                mod = new Modo(labelText, false);
-                modo.Add(mod);
+                DialogResult dialogResult = MessageBox.Show("¿Está seguro de que quiere empezar una nueva partida?", "Simon Dice", MessageBoxButtons.YesNo);
+                if (dialogResult == DialogResult.Yes)
+                {
+                    nuevaPartida = true;
+                }
+                else if (dialogResult == DialogResult.No)
+                {
+                    nuevaPartida = false;
+                }
             }
+            
+            if (nuevaPartida)
+            {
+                for (int i = 0; i < Controls.Count; i++)
+                {
+                    Controls[i].Visible = false;
+                }
+                menuStrip1.Visible = true;
+                lbl.Visible = true;
 
-            btnAceptar = new Button();
-            btnAceptar.Location = new Point(lbl.Location.X, modo[2].labelText.Location.Y + 30);
-            btnAceptar.Size = new Size(80, 30);
-            btnAceptar.Text = "Aceptar";
-            btnAceptar.Click += new System.EventHandler(this.btnAceptar_Click);
-            btnAceptar.Visible = true;
-            Controls.Add(btnAceptar);
+                jugadores = new List<Jugador>();
+                jugadoresEliminados = new List<Jugador>();
+                modo = new List<Modo>();
+                listaBotones = new List<Button>();
+                coloresBoton = new List<Color>();
+                secuencia = new Button();
+
+                checkBox1.Visible = false;
+                if (modo.Count > 0)
+                {
+                    for (int i = 0; i < modo.Count; i++)
+                    {
+                        modo[i].labelText.Visible = false;
+                    }
+                    modo.Clear();
+                }
+                if (listaBotones.Count > 0)
+                {
+                    for (int i = 0; i < listaBotones.Count; i++)
+                    {
+                        listaBotones[i].Visible = false;
+                        listaBotones.Clear();
+                    }
+                }
+                if (jugadoresEliminados.Count > 0)
+                {
+                    jugadoresEliminados.Clear();
+                }
+
+                if (jugadores.Count > 0)
+                {
+                    jugadores.Clear();
+                }
+                if (listaBotones.Count > 0)
+                {
+                    for (int i = 0; i < listaBotones.Count; i++)
+                    {
+                        listaBotones[i].Visible = false;
+                    }
+                    listaBotones.Clear();
+                }
+                if (secuencia.Visible)
+                {
+                    secuencia.Visible = false;
+                }
+                if (coloresBoton.Count > 0)
+                {
+                    coloresBoton.Clear();
+                }
+
+
+
+
+                checkBox1.Location = new Point(lbl.Location.X + 80, lbl.Location.Y);
+                checkBox1.Visible = true;
+
+                string[] lista = new string[3];
+                lista[0] = "nº jugadores";
+                lista[1] = "nº botones(3-8)";
+                lista[2] = "n º secuencias";
+                btnJugar.Visible = false;
+                lbl.Visible = true;
+
+                y = lbl.Location.Y + 20;
+                for (int i = 0; i < 3; i++)
+                {
+                    labelText = new LabelTextBox();
+                    labelText.Size = new Size(20, 150);
+                    labelText.Location = new Point(lbl.Location.X - 20, y);
+                    labelText.Tamaño = 30;
+                    labelText.TextLbl = lista[i];
+                    labelText.Visible = true;
+                    labelText.Separacion = 10;
+
+                    Controls.Add(labelText);
+                    y += 30;
+
+                    mod = new Modo(labelText, false);
+                    modo.Add(mod);
+                }
+
+                btnAceptar = new Button();
+                btnAceptar.Location = new Point(lbl.Location.X, modo[2].labelText.Location.Y + 30);
+                btnAceptar.Size = new Size(80, 30);
+                btnAceptar.Text = "Aceptar";
+                btnAceptar.Click += new System.EventHandler(this.btnAceptar_Click);
+                btnAceptar.Visible = true;
+                Controls.Add(btnAceptar);
+            }
+            
         }
         int numBotones;
         public void Comprueba(int modoJuego, int numero)
@@ -287,13 +371,12 @@ namespace Simon_Dice
         List<Button> listaBotones;
         List<Jugador> jugadoresEliminados;
         Color color;
-        //Timer timer;
+       
         static Button secuencia;
         public void Juego()
         {
-            listaBotones = new List<Button>();
-            coloresBoton = new List<Color>();
-            jugadoresEliminados = new List<Jugador>();
+            
+            
             coloresBoton.Add(Color.Red);
             coloresBoton.Add(Color.Green);
             coloresBoton.Add(Color.Blue);
@@ -303,7 +386,7 @@ namespace Simon_Dice
             coloresBoton.Add(Color.Pink);
             coloresBoton.Add(Color.Orange);
 
-            jugadores = new List<Jugador>();
+            
             for(int i=0; i<modo.Count; i++)
             {
                 colores = new List<Color>();
@@ -338,11 +421,12 @@ namespace Simon_Dice
 
             if (flagChecked==false)
             {
-                secuencia = new Button();
+               
                 secuencia.Size = new Size(80, 40);
                 secuencia.Location = new Point(lbl.Location.X + 50, listaBotones[numBotones - 1].Location.Y + 100);
                 secuencia.Text = "Nueva secuencia";
                 secuencia.Click += new EventHandler(this.secuencia_Click);
+                secuencia.Visible = true;
                 Controls.Add(secuencia);
             }
             else
@@ -447,7 +531,27 @@ namespace Simon_Dice
 
         bool banderaSecuencia, flagsubita = false, flagañadir = false;
         static int cont = 0, numJugador=0, contSecuencias=0;
-        
+
+        private void PuntuacionesToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Form2 f = new Form2();
+            f.Show();
+        }
+
+        private void Form1_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            DialogResult dialogResult = MessageBox.Show("¿Está seguro de que desea salir?", "Simon Dice", MessageBoxButtons.YesNo);
+            if (dialogResult == DialogResult.Yes)
+            {
+                e.Cancel = false;
+            }
+            else
+            {
+                e.Cancel = true;
+            }
+            
+        }
+
         public void CambiaColor()
         {
             for (int j = 0; j < 2; j++)
@@ -550,6 +654,7 @@ namespace Simon_Dice
                             MuestraMensaje("Todos los jugadores han perdido", 0);
                             banderaPulsarBoton = false;
                             banderaEliminados = true;
+                            insertarPuntuaciones();
                         }
                         else
                         {
@@ -590,5 +695,37 @@ namespace Simon_Dice
             
         }
 
+        public void insertarPuntuaciones()
+        {
+            
+            try
+            {
+                MySqlConnection con = new MySqlConnection();
+                con.ConnectionString = "Server=localhost;Port=3306;Database=db;Uid=root;Pwd=;";
+                con.Open();
+  
+                DateTime fecha = DateTime.Today;
+                int año = fecha.Year;
+                int mes = fecha.Month;
+                int dia = fecha.Day;
+                string f = año + "-" + mes + "-" + dia;
+
+                MySqlCommand comm = con.CreateCommand();
+                for(int i=0; i<jugadoresEliminados.Count; i++)
+                {
+                    comm.CommandText = "INSERT INTO puntuaciones VALUES('"+jugadoresEliminados[i].nombre+"',"+jugadoresEliminados[i].punt+",'"+ f + "')";
+                    comm.ExecuteNonQuery();
+                }
+                
+
+                
+
+                con.Close();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+        }
     }
 }
