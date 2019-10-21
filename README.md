@@ -6,3 +6,5 @@
 -'8 de octubre: el modo  "muerte súbita" se ha realizado.  Comienzo con  el guargado de puntuaciones'.
 
 -20 de octubre: realizado la inserción de datos (nombre, puntuacion y fecha) en una base de datos y se pueden ver las puntuaciones en un segundo formulario en una opción del Tool Strip Menu. En este último, también está la opción de empezar una nueva partida, preguntando previamente confirmación.
+
+-21 de octubre: en puntuaciones se puede escoger ordenar por fecha, nombre o puntuación. 
