@@ -20,13 +20,20 @@ namespace Simon_Dice
             InitializeComponent();
         }
 
+        string query;
         private void Form2_Load(object sender, EventArgs e)
+        {
+
+            query = "Select * from puntuaciones";
+            obtenerDatos(query);
+
+        }
+
+        public void obtenerDatos(string query)
         {
             string conexion = "Server=localhost;Database=db;User ID=root;Password=;Pooling=false;";
             MySqlConnection conn = new MySqlConnection(conexion);
             conn.Open();
-
-            string query = "Select * From puntuaciones";
 
             MySqlCommand mycomand = new MySqlCommand(query, conn);
 
@@ -36,15 +43,47 @@ namespace Simon_Dice
 
             while (myreader.Read())
             {
-                datos+=myreader["nombre"].ToString()+" "+ myreader["puntuacion"].ToString();
+                datos += myreader["nombre"].ToString() + " " + myreader["puntuacion"].ToString();
                 datos += Environment.NewLine;
             }
 
             textBox1.Text = datos;
-           
-
         }
 
-       
+        private void DeAAZToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            query = "select * from puntuaciones ORDER BY nombre asc";
+            obtenerDatos(query);
+        }
+
+        private void DeZAAToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            query = "select * from puntuaciones ORDER BY nombre desc";
+            obtenerDatos(query);
+        }
+
+        private void DeMenorAMayorToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            query = "select * from puntuaciones ORDER BY puntuacion asc";
+            obtenerDatos(query);
+        }
+
+        private void DeMayorAMenorToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            query = "select * from puntuaciones ORDER BY puntuacion desc";
+            obtenerDatos(query);
+        }
+
+        private void DeRecienteAAntiguaToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            query = "select * from puntuaciones ORDER BY fecha desc";
+            obtenerDatos(query);
+        }
+
+        private void DeAntiguaARecienteToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            query = "select * from puntuaciones ORDER BY fecha asc";
+            obtenerDatos(query);
+        }
     }
 }

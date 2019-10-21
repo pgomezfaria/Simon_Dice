@@ -76,20 +76,14 @@ namespace Simon_Dice
 
                 checkBox1.Visible = false;
                 if (modo.Count > 0)
-                {
-                    for (int i = 0; i < modo.Count; i++)
-                    {
-                        modo[i].labelText.Visible = false;
-                    }
+                {              
                     modo.Clear();
                 }
                 if (listaBotones.Count > 0)
                 {
-                    for (int i = 0; i < listaBotones.Count; i++)
-                    {
-                        listaBotones[i].Visible = false;
+                    
                         listaBotones.Clear();
-                    }
+                    
                 }
                 if (jugadoresEliminados.Count > 0)
                 {
@@ -102,10 +96,6 @@ namespace Simon_Dice
                 }
                 if (listaBotones.Count > 0)
                 {
-                    for (int i = 0; i < listaBotones.Count; i++)
-                    {
-                        listaBotones[i].Visible = false;
-                    }
                     listaBotones.Clear();
                 }
                 if (secuencia.Visible)
