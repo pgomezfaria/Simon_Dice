@@ -18,6 +18,7 @@ namespace Simon_Dice
     public partial class Form1 : Form
     {
         Button btnJugar, btnAceptar;
+        List<ToolStripMenuItem> listaTool = new List<ToolStripMenuItem>();
         public Form1()
         {
             InitializeComponent();
@@ -29,11 +30,22 @@ namespace Simon_Dice
             btnJugar.Visible = true;
             btnJugar.Click += new System.EventHandler(this.btnJugar_Click);
             Controls.Add(btnJugar);
-            lbl.Location = new Point(Width / 2 - lbl.Width-20, 20);
+            lbl.Location = new Point(Width / 2 - lbl.Width-20, 30);
             lbl.Visible = false;
             checkBox1.Visible = false;
-            
-
+            coloresToolStripMenuItem.Visible = false;
+            listaTool.Add(boton1ToolStripMenuItem);
+            listaTool.Add(boton2ToolStripMenuItem);
+            listaTool.Add(boton3ToolStripMenuItem);
+            listaTool.Add(boton4ToolStripMenuItem);
+            listaTool.Add(boton5ToolStripMenuItem);
+            listaTool.Add(boton6ToolStripMenuItem);
+            listaTool.Add(boton7ToolStripMenuItem);
+            listaTool.Add(boton8ToolStripMenuItem);
+            for (int i = 0; i < listaTool.Count; i++)
+            {
+                listaTool[i].Visible = false;
+            }
         }
 
         List<Modo> modo;
@@ -45,7 +57,12 @@ namespace Simon_Dice
         bool nuevaPartida = true;
         private void btnJugar_Click(object sender, EventArgs e)
         {
-            if(sender.ToString()=="&Nueva partida")
+            coloresToolStripMenuItem.Visible = false;
+            for (int i = 0; i < listaTool.Count; i++)
+            {
+                listaTool[i].Visible = false;
+            }
+            if (sender.ToString()=="&Nueva partida")
             {
                 DialogResult dialogResult = MessageBox.Show("¿Está seguro de que quiere empezar una nueva partida?", "Simon Dice", MessageBoxButtons.YesNo);
                 if (dialogResult == DialogResult.Yes)
@@ -286,6 +303,7 @@ namespace Simon_Dice
         bool flagChecked = false;
         public void Jugadores()
         {
+            
             if (checkBox1.Checked)
             {
                 flagChecked = true;
@@ -376,8 +394,18 @@ namespace Simon_Dice
             coloresBoton.Add(Color.Pink);
             coloresBoton.Add(Color.Orange);
 
+            coloresToolStripMenuItem.Visible = true;
+            for (int i = 0; i < numBotones; i++)
+            {
+                listaTool[i].Visible = true;
+            }
+
             
-            for(int i=0; i<modo.Count; i++)
+
+            
+
+
+            for (int i=0; i<modo.Count; i++)
             {
                 colores = new List<Color>();
                 jugador = new Jugador(modo[i].labelText.TextTxt, colores, 0);
@@ -506,7 +534,7 @@ namespace Simon_Dice
             MuestraMensaje("Turno para: " + jugadores[numJugador].nombre, 0);
         }
 
-        static void MuestraMensaje(string msg, int num)
+        public static void MuestraMensaje(string msg, int num)
         {
             if (num == 0)
             {
@@ -521,6 +549,56 @@ namespace Simon_Dice
 
         bool banderaSecuencia, flagsubita = false, flagañadir = false;
         static int cont = 0, numJugador=0, contSecuencias=0;
+
+        private void Boton1ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            colorBoton(0);
+        }
+
+        public void colorBoton(int boton)
+        {
+            ColorDialog color = new ColorDialog();
+            if (color.ShowDialog() == DialogResult.OK)
+            {
+                listaBotones[boton].BackColor = color.Color;
+                coloresBoton[boton] = color.Color;
+            }
+        }
+
+        private void Boton2ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            colorBoton(1);
+        }
+
+        private void Boton3ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            colorBoton(2);
+        }
+
+        private void Boton4ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            colorBoton(3);
+        }
+
+        private void Boton5ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            colorBoton(4);
+        }
+
+        private void Boton6ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            colorBoton(5);
+        }
+
+        private void Boton7ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            colorBoton(6);
+        }
+
+        private void Boton8ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            colorBoton(7);
+        }
 
         private void PuntuacionesToolStripMenuItem_Click(object sender, EventArgs e)
         {
