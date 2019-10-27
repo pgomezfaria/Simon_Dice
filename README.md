@@ -8,3 +8,5 @@
 -20 de octubre: realizado la inserción de datos (nombre, puntuacion y fecha) en una base de datos y se pueden ver las puntuaciones en un segundo formulario en una opción del Tool Strip Menu. En este último, también está la opción de empezar una nueva partida, preguntando previamente confirmación.
 
 -21 de octubre: en puntuaciones se puede escoger ordenar por fecha, nombre o puntuación. 
+
+-27 de octubre: rango de fechas en puntuacion para que el usuario pueda escoger una fecha inicial y final. También existe la opción de cambiar el color de los botones del juego
