@@ -12,6 +12,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Media;
 
 namespace Simon_Dice
 {
@@ -22,6 +23,11 @@ namespace Simon_Dice
         public Form1()
         {
             InitializeComponent();
+          
+            SoundPlayer player = new SoundPlayer();
+            player.SoundLocation = AppDomain.CurrentDomain.BaseDirectory + "\\musica.wav";
+            
+            player.Play();
 
             btnJugar = new Button();
             btnJugar.Size = new Size(80, 30);
@@ -46,6 +52,15 @@ namespace Simon_Dice
             {
                 listaTool[i].Visible = false;
             }
+            coloresBoton = new List<Color>();
+            coloresBoton.Add(Color.Red);
+            coloresBoton.Add(Color.Green);
+            coloresBoton.Add(Color.Blue);
+            coloresBoton.Add(Color.Black);
+            coloresBoton.Add(Color.Yellow);
+            coloresBoton.Add(Color.Brown);
+            coloresBoton.Add(Color.Pink);
+            coloresBoton.Add(Color.Orange);
         }
 
         List<Modo> modo;
@@ -88,7 +103,7 @@ namespace Simon_Dice
                 jugadoresEliminados = new List<Jugador>();
                 modo = new List<Modo>();
                 listaBotones = new List<Button>();
-                coloresBoton = new List<Color>();
+                
                 secuencia = new Button();
 
                 checkBox1.Visible = false;
@@ -385,14 +400,7 @@ namespace Simon_Dice
         {
             
             
-            coloresBoton.Add(Color.Red);
-            coloresBoton.Add(Color.Green);
-            coloresBoton.Add(Color.Blue);
-            coloresBoton.Add(Color.Black);
-            coloresBoton.Add(Color.Yellow);
-            coloresBoton.Add(Color.Brown);
-            coloresBoton.Add(Color.Pink);
-            coloresBoton.Add(Color.Orange);
+            
 
             coloresToolStripMenuItem.Visible = true;
             for (int i = 0; i < numBotones; i++)
@@ -421,6 +429,7 @@ namespace Simon_Dice
                 botonesJuego = new Button();
                 botonesJuego.Size = new Size(80, 50);
                 botonesJuego.Location = new Point(x, y);
+               
                 botonesJuego.BackColor = coloresBoton[i];
                 botonesJuego.Click += new System.EventHandler(this.b_Click);
                 if (j % 2 == 0)
