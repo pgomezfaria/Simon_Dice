@@ -21,6 +21,7 @@ namespace Simon_Dice
         }
 
         string query;
+        public TextBox textBox, textBox2;
         private void Form2_Load(object sender, EventArgs e)
         {
 
@@ -29,63 +30,110 @@ namespace Simon_Dice
 
         }
 
+        /// <summary>
+        /// Obtiene los datos de la base de datos
+        /// </summary>
+        /// <param name="query">Sentencia sql</param>
         public void obtenerDatos(string query)
         {
-            string conexion = "Server=localhost;Database=db;User ID=root;Password=;Pooling=false;";
-            MySqlConnection conn = new MySqlConnection(conexion);
-            conn.Open();
-
-            MySqlCommand mycomand = new MySqlCommand(query, conn);
-
-            string datos = "";
-
-            MySqlDataReader myreader = mycomand.ExecuteReader();
-
-            while (myreader.Read())
+            try
             {
-                datos += myreader["nombre"].ToString() + " " + myreader["puntuacion"].ToString();
-                datos += Environment.NewLine;
-            }
+                string conexion = "Server=localhost;Database=db;User ID=root;Password=;Pooling=false;";
+                MySqlConnection conn = new MySqlConnection(conexion);
+                conn.Open();
 
-            textBox1.Text = datos;
+                MySqlCommand mycomand = new MySqlCommand(query, conn);
+
+                string datos = "";
+
+                MySqlDataReader myreader = mycomand.ExecuteReader();
+
+                while (myreader.Read())
+                {
+                    datos += myreader["nombre"].ToString() + " " + myreader["puntuacion"].ToString();
+                    datos += Environment.NewLine;
+                }
+
+                textBox1.Text = datos;
+            }
+            catch (MySqlException)
+            {
+                Form1.MuestraMensaje("Error al intentar la conexion", 1);
+            }
+            
         }
 
+        /// <summary>
+        /// Click ordenar por el nombre de A a Z
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void DeAAZToolStripMenuItem_Click(object sender, EventArgs e)
         {
             query = "select * from puntuaciones ORDER BY nombre asc";
             obtenerDatos(query);
         }
 
+        /// <summary>
+        /// Click ordenar por el nombre de Z a A
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void DeZAAToolStripMenuItem_Click(object sender, EventArgs e)
         {
             query = "select * from puntuaciones ORDER BY nombre desc";
             obtenerDatos(query);
         }
 
+        /// <summary>
+        /// Click ordenar por la puntuación de menor a mayor
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void DeMenorAMayorToolStripMenuItem_Click(object sender, EventArgs e)
         {
             query = "select * from puntuaciones ORDER BY puntuacion asc";
             obtenerDatos(query);
         }
 
+        /// <summary>
+        /// Click ordenar por la puntuación de mayor a menor
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void DeMayorAMenorToolStripMenuItem_Click(object sender, EventArgs e)
         {
             query = "select * from puntuaciones ORDER BY puntuacion desc";
             obtenerDatos(query);
         }
 
+        /// <summary>
+        /// Click ordenar por la fecha de más reciente a más antigua
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void DeRecienteAAntiguaToolStripMenuItem_Click(object sender, EventArgs e)
         {
             query = "select * from puntuaciones ORDER BY fecha desc";
             obtenerDatos(query);
         }
 
+        /// <summary>
+        /// Click ordenar por la fecha de más antigua a más reciente
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void DeAntiguaARecienteToolStripMenuItem_Click(object sender, EventArgs e)
         {
             query = "select * from puntuaciones ORDER BY fecha asc";
             obtenerDatos(query);
         }
 
+        /// <summary>
+        /// Click buscar jugador
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void JugadorToolStripMenuItem_Click(object sender, EventArgs e)
         {
             string nombre = "";
@@ -98,7 +146,14 @@ namespace Simon_Dice
             }
         }
 
-        public TextBox textBox, textBox2;
+       
+
+        /// <summary>
+        /// Muestra input dialog
+        /// </summary>
+        /// <param name="tit"></param>
+        /// <param name="flag"></param>
+        /// <returns></returns>
         private DialogResult ShowInputDialog(string tit , bool flag)
         {
             int x = 0, y = 0, tam;
@@ -172,7 +227,11 @@ namespace Simon_Dice
             return result;
         }
 
-       
+       /// <summary>
+       /// Click buscar puntuación
+       /// </summary>
+       /// <param name="sender"></param>
+       /// <param name="e"></param>
         private void PuntuacionToolStripMenuItem_Click(object sender, EventArgs e)
         {
             int punt = 0;
@@ -197,7 +256,11 @@ namespace Simon_Dice
             }
         }
 
-
+        /// <summary>
+        /// Obtiene donde entra el foco
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         public void TextGotFocus(object sender, EventArgs e)
         {
             TextBox tb = (TextBox)sender;
@@ -211,6 +274,11 @@ namespace Simon_Dice
             }
         }
 
+        /// <summary>
+        /// Obtiene donde sale el foco
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         public void TextLostFocus(object sender, EventArgs e)
         {
             TextBox tb = (TextBox)sender;
@@ -226,6 +294,11 @@ namespace Simon_Dice
             }
         }
 
+        /// <summary>
+        /// Click buscar fecha
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void FechaToolStripMenuItem1_Click(object sender, EventArgs e)
         {
             string fecha = "";
@@ -247,6 +320,11 @@ namespace Simon_Dice
             }
         }
 
+        /// <summary>
+        /// Click buscar rango de fechas
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void RangoFechasToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (ShowInputDialog("Rango de fechas(yy-mm-dd)", true) == DialogResult.OK)

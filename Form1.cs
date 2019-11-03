@@ -13,21 +13,53 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Media;
+using System.Drawing.Drawing2D;
 
 namespace Simon_Dice
 {
     public partial class Form1 : Form
     {
+
         Button btnJugar, btnAceptar;
         List<ToolStripMenuItem> listaTool = new List<ToolStripMenuItem>();
+        SoundPlayer player, playSecuencia;
+        List<Modo> modo;
+        LabelTextBox labelText;
+        Modo mod;
+        int y = 50;
+        int numBotones;
+        int numSecu;
+        bool nuevaPartida = true;
+        Button btnAcept;
+        bool flagChecked = false;
+        static List<Jugador> jugadores;
+        Jugador jugador;
+        List<Color> colores;
+        Button botonesJuego;
+        List<Color> coloresBoton;
+        List<Button> listaBotones;
+        List<Jugador> jugadoresEliminados;
+        Color color;
+        static int pos;
+        bool banderaEliminados = false;
+        static List<int> listaSecuencias;
+        static bool banderaPulsarBoton = false;
+        Thread hilo;
+        bool banderaSecuencia, flagsubita = false, flagañadir = false;
+        static int cont = 0, numJugador = 0, contSecuencias = 0;
+        bool flagSonido = true, flagMusica = true;
+        bool flagPintar = true;
+        int xstring = 170, ystring = 200;
+        static Button secuencia;
         public Form1()
         {
             InitializeComponent();
-          
-            SoundPlayer player = new SoundPlayer();
-            player.SoundLocation = AppDomain.CurrentDomain.BaseDirectory + "\\musica.wav";
             
-            player.Play();
+            player = new SoundPlayer();
+            playSecuencia = new SoundPlayer();
+            player.SoundLocation = AppDomain.CurrentDomain.BaseDirectory + "\\musica.wav";
+            playSecuencia.SoundLocation = AppDomain.CurrentDomain.BaseDirectory + "\\secuencia.wav";
+            player.PlayLooping();
 
             btnJugar = new Button();
             btnJugar.Size = new Size(80, 30);
@@ -63,15 +95,14 @@ namespace Simon_Dice
             coloresBoton.Add(Color.Orange);
         }
 
-        List<Modo> modo;
-        LabelTextBox labelText;
-        Modo mod;
-        int y = 50;
-
-        int numSecu;
-        bool nuevaPartida = true;
+        /// <summary>
+        /// Click del botón jugar
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void btnJugar_Click(object sender, EventArgs e)
         {
+            flagPintar = false;
             coloresToolStripMenuItem.Visible = false;
             for (int i = 0; i < listaTool.Count; i++)
             {
@@ -83,11 +114,17 @@ namespace Simon_Dice
                 if (dialogResult == DialogResult.Yes)
                 {
                     nuevaPartida = true;
+                    banderaEliminados = false;
+                    Refresh();
                 }
                 else if (dialogResult == DialogResult.No)
                 {
                     nuevaPartida = false;
                 }
+            }
+            else
+            {
+                Refresh();
             }
             
             if (nuevaPartida)
@@ -96,6 +133,8 @@ namespace Simon_Dice
                 {
                     Controls[i].Visible = false;
                 }
+                musica.Visible = true;
+                sonido.Visible = true;
                 menuStrip1.Visible = true;
                 lbl.Visible = true;
 
@@ -134,12 +173,6 @@ namespace Simon_Dice
                 {
                     secuencia.Visible = false;
                 }
-                if (coloresBoton.Count > 0)
-                {
-                    coloresBoton.Clear();
-                }
-
-
 
 
                 checkBox1.Location = new Point(lbl.Location.X + 80, lbl.Location.Y);
@@ -162,7 +195,7 @@ namespace Simon_Dice
                     labelText.TextLbl = lista[i];
                     labelText.Visible = true;
                     labelText.Separacion = 10;
-
+                    labelText.TabIndex = 4;
                     Controls.Add(labelText);
                     y += 30;
 
@@ -176,15 +209,23 @@ namespace Simon_Dice
                 btnAceptar.Text = "Aceptar";
                 btnAceptar.Click += new System.EventHandler(this.btnAceptar_Click);
                 btnAceptar.Visible = true;
+                btnAceptar.TabIndex = 5;
                 Controls.Add(btnAceptar);
             }
             
         }
-        int numBotones;
+       
+
+        /// <summary>
+        /// Comprueba que los datos introducidos en cada textbox son válidos
+        /// </summary>
+        /// <param name="modoJuego">Numero asociado a la parte del juego</param>
+        /// <param name="numero">Numero asociado al textbox</param>
         public void Comprueba(int modoJuego, int numero)
         {
             string error = "";
             int num = 0;
+            int j = numero + 1;
             try
             {
                 if (modoJuego == 1)
@@ -240,7 +281,33 @@ namespace Simon_Dice
                     }
                     else
                     {
-                        modo[numero].flag = true;
+                        try
+                        {
+                            
+                            modo[numero].flag = false;
+                            Convert.ToInt32(modo[numero].labelText.TextTxt);
+                            MuestraMensaje("El nombre del jugador "+j+" no es válido", 0);
+                        }
+                        catch (FormatException)
+                        {
+                            modo[numero].flag = true;
+                            
+                            for (int i=0; i<modo.Count; i++)
+                            {
+                                if (i != numero)
+                                {
+                                    if (modo[numero].labelText.TextTxt == modo[i].labelText.TextTxt)
+                                    {
+                                        modo[numero].flag = false;
+                                        MuestraMensaje("Jugador " +j +" repetido: " + modo[i].labelText.TextTxt, 0);
+                                        break;
+                                    }
+                                }
+                                
+                            }
+                            
+                        }
+                        
                     }
                 }
                 
@@ -297,8 +364,15 @@ namespace Simon_Dice
                     
             }
         }
+
+        /// <summary>
+        /// Click del botón aceptar
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void btnAceptar_Click(object sender, EventArgs e)
         {
+            
             for (int i = 0; i < 3; i++)
             {
                 Comprueba(1,i);
@@ -314,8 +388,10 @@ namespace Simon_Dice
                 Jugadores();
             }
         }
-        Button btnAcept;
-        bool flagChecked = false;
+       
+        /// <summary>
+        /// Pantalla del juego donde se pide el nombre de los jugadores
+        /// </summary>
         public void Jugadores()
         {
             
@@ -357,9 +433,12 @@ namespace Simon_Dice
             btnAcept.Visible = true;
             Controls.Add(btnAcept);
         }
-        static List<Jugador> jugadores;
-        Jugador jugador;
-        List<Color> colores;
+        
+        /// <summary>
+        /// Click del botón aceptar
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void btnAcept_Click(object sender, EventArgs e)
         {
             bool flag = false;
@@ -389,29 +468,17 @@ namespace Simon_Dice
             
         }
 
-        Button botonesJuego;
-         List<Color> coloresBoton;
-        List<Button> listaBotones;
-        List<Jugador> jugadoresEliminados;
-        Color color;
-       
-        static Button secuencia;
+        /// <summary>
+        /// Pantalla donde se realiza el juego
+        /// </summary>
         public void Juego()
         {
-            
-            
-            
-
+            flagPintar = false;
             coloresToolStripMenuItem.Visible = true;
             for (int i = 0; i < numBotones; i++)
             {
                 listaTool[i].Visible = true;
             }
-
-            
-
-            
-
 
             for (int i=0; i<modo.Count; i++)
             {
@@ -465,10 +532,18 @@ namespace Simon_Dice
             listaSecuencias = new List<int>();
                  
         }
-        static int pos;
-        bool banderaEliminados = false;
+        
+        /// <summary>
+        /// Click de los botones con colores
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         public void b_Click(object sender, System.EventArgs e)
         {
+            if (flagSonido)
+            {
+                playSecuencia.PlayLooping();
+            }
             
             color = ((Button)sender).BackColor;
             pos= coloresBoton.IndexOf(color);
@@ -496,10 +571,15 @@ namespace Simon_Dice
             }
 
             hilo = new Thread(CambiaColor);
-            Console.WriteLine("Comienza hilo");
+            
             hilo.Start();
             hilo.Join();
 
+            playSecuencia.Stop();
+            if (flagMusica)
+            {
+                player.PlayLooping();
+            }
             
             if (banderaSecuencia)
             {
@@ -511,15 +591,26 @@ namespace Simon_Dice
                 {
                     listaBotones[i].Visible = false;
                 }
-                btnJugar.Visible=true;
+                flagPintar = true;
+                xstring = 170;
+                ystring = 150;
+                Refresh();
+               // btnJugar.Visible=true;
             }
         }
-       static List<int> listaSecuencias;
-        Thread hilo;
 
-       static bool banderaPulsarBoton = false;
+        /// <summary>
+        /// Click del botón secuencia
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         public void secuencia_Click(object sender, EventArgs e)
         {
+            if (flagSonido)
+            {
+                playSecuencia.PlayLooping();
+            }
+            
             int num;
             banderaSecuencia = false;
             Random random = new Random();
@@ -540,9 +631,21 @@ namespace Simon_Dice
             secuencia.Visible = false;
 
             banderaPulsarBoton = true;
+            playSecuencia.Stop();
+            if (flagMusica)
+            {
+                player.PlayLooping();
+            }
+            
             MuestraMensaje("Turno para: " + jugadores[numJugador].nombre, 0);
+            
         }
 
+        /// <summary>
+        /// Muestra un messagebox
+        /// </summary>
+        /// <param name="msg">String que se quiere mostrar</param>
+        /// <param name="num">Tipo de icono del messagebox</param>
         public static void MuestraMensaje(string msg, int num)
         {
             if (num == 0)
@@ -556,14 +659,21 @@ namespace Simon_Dice
             
         }
 
-        bool banderaSecuencia, flagsubita = false, flagañadir = false;
-        static int cont = 0, numJugador=0, contSecuencias=0;
-
+        
+        /// <summary>
+        /// Click del boton 1 de menu strip
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Boton1ToolStripMenuItem_Click(object sender, EventArgs e)
         {
             colorBoton(0);
         }
 
+        /// <summary>
+        /// Cambia el color del boton 
+        /// </summary>
+        /// <param name="boton">Numero del boton</param>
         public void colorBoton(int boton)
         {
             ColorDialog color = new ColorDialog();
@@ -574,47 +684,138 @@ namespace Simon_Dice
             }
         }
 
+        /// <summary>
+        /// Click del boton 2 de menu strip
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Boton2ToolStripMenuItem_Click(object sender, EventArgs e)
         {
             colorBoton(1);
         }
 
+        /// <summary>
+        /// Click del boton 3 de menu strip
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Boton3ToolStripMenuItem_Click(object sender, EventArgs e)
         {
             colorBoton(2);
         }
 
+        /// <summary>
+        /// Click del boton 4 de menu strip
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Boton4ToolStripMenuItem_Click(object sender, EventArgs e)
         {
             colorBoton(3);
         }
 
+        /// <summary>
+        /// Click del boton 5 de menu strip
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Boton5ToolStripMenuItem_Click(object sender, EventArgs e)
         {
             colorBoton(4);
         }
 
+        /// <summary>
+        /// Click del boton 6 de menu strip
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Boton6ToolStripMenuItem_Click(object sender, EventArgs e)
         {
             colorBoton(5);
         }
 
+        /// <summary>
+        /// Click del boton 7 de menu strip
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Boton7ToolStripMenuItem_Click(object sender, EventArgs e)
         {
             colorBoton(6);
         }
 
+        /// <summary>
+        /// Click del boton 8 de menu strip
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Boton8ToolStripMenuItem_Click(object sender, EventArgs e)
         {
             colorBoton(7);
         }
 
+        /// <summary>
+        /// Detecta cuando la propiedad checked de música cambia
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void Musica_CheckedChanged(object sender, EventArgs e)
+        {
+            if (musica.Checked)
+            {
+                player.PlayLooping();
+                flagMusica = true;
+            }
+            else
+            {
+                player.Stop();
+                flagMusica = false;
+            }
+        }
+
+        /// <summary>
+        /// Detecta cuando la propiedad checked de sonido cambia
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void Sonido_CheckedChanged(object sender, EventArgs e)
+        {
+            if (sonido.Checked)
+            {
+                flagSonido = true;
+            }
+            else
+            {
+                flagSonido = false;
+            }
+        }
+
+        /// <summary>
+        /// Click de créditos de menú strip
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void CreditosToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            MuestraMensaje("Musica: https://audionautix.com", 0);
+        }
+
+        /// <summary>
+        /// Click de puntuaciones de menú strip
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void PuntuacionesToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Form2 f = new Form2();
             f.Show();
         }
 
+        /// <summary>
+        /// Cuando el usuario cierra el formulario
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
             DialogResult dialogResult = MessageBox.Show("¿Está seguro de que desea salir?", "Simon Dice", MessageBoxButtons.YesNo);
@@ -628,7 +829,9 @@ namespace Simon_Dice
             }
             
         }
-
+        /// <summary>
+        /// Cambia el color del botón a transparente y lo cambia de nuevo al establecido
+        /// </summary>
         public void CambiaColor()
         {
             for (int j = 0; j < 2; j++)
@@ -651,9 +854,12 @@ namespace Simon_Dice
 
         }
         
+        /// <summary>
+        /// Comprueba que se ha seleccionado el botón correspondiente a la lista de secuencias y también permite añadir nuevas secuencias
+        /// </summary>
         public void CompuebaBoton()
         {
-            Console.WriteLine("Bandera añadir: " + flagañadir + " Nº secuencia: " + contSecuencias);
+          
             if (flagañadir)
             {
                 listaSecuencias.Add(pos);
@@ -772,6 +978,9 @@ namespace Simon_Dice
             
         }
 
+        /// <summary>
+        /// Inserta puntuaciones en una base de datos
+        /// </summary>
         public void insertarPuntuaciones()
         {
             
@@ -799,10 +1008,47 @@ namespace Simon_Dice
 
                 con.Close();
             }
-            catch (Exception ex)
+            catch (MySqlException ex)
             {
                 MessageBox.Show(ex.Message);
             }
+        }
+        
+        /// <summary>
+        /// Pinta en el formulario
+        /// </summary>
+        /// <param name="e"></param>
+        protected override void OnPaint(PaintEventArgs e)
+        {
+            
+            base.OnPaint(e);
+            Graphics g = e.Graphics;
+            g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+            SolidBrush myBrush = new SolidBrush(Color.IndianRed);
+            g.FillEllipse(myBrush, new Rectangle(80, 80, 70, 70));
+            myBrush = new SolidBrush(Color.Chocolate);
+            g.FillEllipse(myBrush, new Rectangle(500, 80, 70, 70));
+            myBrush = new SolidBrush(Color.Gold);
+            g.FillEllipse(myBrush, new Rectangle(80, 220, 70, 70));
+            myBrush = new SolidBrush(Color.Aquamarine);
+            g.FillEllipse(myBrush, new Rectangle(500, 220, 70, 70));
+            myBrush = new SolidBrush(Color.LimeGreen);
+            g.FillEllipse(myBrush, new Rectangle(80, 370, 70, 70));
+            myBrush = new SolidBrush(Color.MediumVioletRed);
+            g.FillEllipse(myBrush, new Rectangle(500, 370, 70, 70));
+            LinearGradientBrush linear = new LinearGradientBrush(
+                new Point(0, 0),
+                new Point(200, 100),
+                Color.FromArgb(255, 0, 0, 255),   // opaque blue
+                Color.FromArgb(255, 0, 255, 0));
+            Font font;
+            font = new Font(this.Font.FontFamily, (float)(this.Font.Size *8));
+            if (flagPintar)
+            {
+                g.DrawString("Simon", font, linear, xstring, ystring);
+            }
+            
+                
         }
     }
 }
