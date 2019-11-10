@@ -6,6 +6,7 @@ using System.Data;
 using System.Data.OleDb;
 using System.Data.SqlClient;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -54,6 +55,10 @@ namespace Simon_Dice
                     datos += Environment.NewLine;
                 }
 
+                if (datos == "")
+                {
+                    datos = "No se han encontrado resultados";
+                }
                 textBox1.Text = datos;
             }
             catch (MySqlException)
@@ -140,9 +145,23 @@ namespace Simon_Dice
 
             if (ShowInputDialog("Nombre", false) == DialogResult.OK)
             {
-                nombre = textBox.Text;
-                query = "select * from puntuaciones where nombre='" + nombre + "'";
-                obtenerDatos(query);
+                try
+                {
+                     Convert.ToInt16(textBox.Text);
+                    Form1.MuestraMensaje("Parámetro no válido", 1);
+                }
+                catch (FormatException)
+                {
+                    nombre = textBox.Text;
+                    query = "select * from puntuaciones where nombre='" + nombre + "'";
+                    obtenerDatos(query);
+                }
+                catch (OverflowException)
+                {
+                    Form1.MuestraMensaje("Parámetro no válido", 1);
+                }
+                
+                
             }
         }
 
@@ -246,11 +265,11 @@ namespace Simon_Dice
                 }
                 catch (FormatException)
                 {
-                    Form1.MuestraMensaje("Formato no valido", 0);
+                    Form1.MuestraMensaje("Formato no valido", 1);
                 }
                 catch (OverflowException)
                 {
-                    Form1.MuestraMensaje("Numero demasiado grande", 0);
+                    Form1.MuestraMensaje("Numero demasiado grande", 1);
                 }
 
             }
@@ -314,7 +333,7 @@ namespace Simon_Dice
                 }
                 catch (FormatException)
                 {
-                    Form1.MuestraMensaje("Fecha no válida", 0);
+                    Form1.MuestraMensaje("Fecha no válida", 1);
                 }
 
             }
@@ -341,8 +360,75 @@ namespace Simon_Dice
                 }
                 catch (FormatException)
                 {
-                    Form1.MuestraMensaje("Rango de fechas no válido", 0);
+                    Form1.MuestraMensaje("Rango de fechas no válido", 1);
                 }
+            }
+        }
+
+        /// <summary>
+        /// Click guardar puntuaciones
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void GuardarPuntuacionesToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            GuardarPuntuaciones();
+        }
+
+        /// <summary>
+        /// Guarda las puntuaciones en un archivo
+        /// </summary>
+        public void GuardarPuntuaciones()
+        {
+
+            string directory;
+            directory = Environment.GetEnvironmentVariable("homepath");
+            SaveFileDialog saveFileDialog1 = new SaveFileDialog();        
+            saveFileDialog1.Filter = "txt files (*.txt)|*.txt|All files (*.*)|*.*";
+            saveFileDialog1.FilterIndex = 1;
+            saveFileDialog1.FileName = "puntuaciones.txt";
+            saveFileDialog1.InitialDirectory = "c:"+directory;
+            
+            
+            if (textBox1.Text != "No se han encontrado resultados")
+            {
+                if (saveFileDialog1.ShowDialog() == DialogResult.OK)
+                {
+                    try
+                    {
+                        using (StreamWriter s = new StreamWriter(saveFileDialog1.FileName))
+                        {
+                            s.Write(textBox1.Text);
+                        }
+                    }
+                    catch (ArgumentNullException)
+                    {
+                        Form1.MuestraMensaje("Error ArgumentNullException", 1);
+                    }
+                    catch (ArgumentException)
+                    {
+                        Form1.MuestraMensaje("Error ArgumentException", 1);
+                    }
+                    catch (DirectoryNotFoundException)
+                    {
+                        Form1.MuestraMensaje("Error DirectoryNotFoundException", 1);
+                    }
+                    catch (PathTooLongException)
+                    {
+                        Form1.MuestraMensaje("Error PathTooLongException", 1);
+                    }
+                    catch (IOException)
+                    {
+                        Form1.MuestraMensaje("Error IOException", 1);
+                    }
+                    
+                    
+                }
+
+            }
+            else
+            {
+                Form1.MuestraMensaje("No hay puntuaciones para guardar", 0);
             }
         }
     }

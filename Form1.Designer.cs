@@ -45,6 +45,10 @@
             this.creditosToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.musica = new System.Windows.Forms.CheckBox();
             this.sonido = new System.Windows.Forms.CheckBox();
+            this.ayudaToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.comoSeJuegaToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.modoMuerteSubitaToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.cronometro = new System.Windows.Forms.Label();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -73,7 +77,8 @@
             this.nuevaPartidaToolStripMenuItem,
             this.puntuacionesToolStripMenuItem,
             this.coloresToolStripMenuItem,
-            this.creditosToolStripMenuItem});
+            this.creditosToolStripMenuItem,
+            this.ayudaToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Size = new System.Drawing.Size(624, 24);
@@ -198,11 +203,44 @@
             this.sonido.UseVisualStyleBackColor = true;
             this.sonido.CheckedChanged += new System.EventHandler(this.Sonido_CheckedChanged);
             // 
+            // ayudaToolStripMenuItem
+            // 
+            this.ayudaToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.comoSeJuegaToolStripMenuItem,
+            this.modoMuerteSubitaToolStripMenuItem});
+            this.ayudaToolStripMenuItem.Name = "ayudaToolStripMenuItem";
+            this.ayudaToolStripMenuItem.Size = new System.Drawing.Size(53, 20);
+            this.ayudaToolStripMenuItem.Text = "Ayuda";
+            // 
+            // comoSeJuegaToolStripMenuItem
+            // 
+            this.comoSeJuegaToolStripMenuItem.Name = "comoSeJuegaToolStripMenuItem";
+            this.comoSeJuegaToolStripMenuItem.Size = new System.Drawing.Size(182, 22);
+            this.comoSeJuegaToolStripMenuItem.Text = "¿Como se juega?";
+            this.comoSeJuegaToolStripMenuItem.Click += new System.EventHandler(this.ComoSeJuegaToolStripMenuItem_Click);
+            // 
+            // modoMuerteSubitaToolStripMenuItem
+            // 
+            this.modoMuerteSubitaToolStripMenuItem.Name = "modoMuerteSubitaToolStripMenuItem";
+            this.modoMuerteSubitaToolStripMenuItem.Size = new System.Drawing.Size(182, 22);
+            this.modoMuerteSubitaToolStripMenuItem.Text = "Modo muerte subita";
+            this.modoMuerteSubitaToolStripMenuItem.Click += new System.EventHandler(this.ModoMuerteSubitaToolStripMenuItem_Click);
+            // 
+            // cronometro
+            // 
+            this.cronometro.AutoSize = true;
+            this.cronometro.Location = new System.Drawing.Point(12, 32);
+            this.cronometro.Name = "cronometro";
+            this.cronometro.Size = new System.Drawing.Size(43, 13);
+            this.cronometro.TabIndex = 8;
+            this.cronometro.Text = "0:00:00";
+            // 
             // Form1
             // 
             this.AutoScroll = true;
             this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.ClientSize = new System.Drawing.Size(624, 527);
+            this.Controls.Add(this.cronometro);
             this.Controls.Add(this.sonido);
             this.Controls.Add(this.musica);
             this.Controls.Add(this.checkBox1);
@@ -213,6 +251,7 @@
             this.Name = "Form1";
             this.Text = "Simon Dice";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
+            this.Scroll += new System.Windows.Forms.ScrollEventHandler(this.Form1_Scroll);
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
             this.ResumeLayout(false);
@@ -239,6 +278,10 @@
         private System.Windows.Forms.CheckBox musica;
         private System.Windows.Forms.ToolStripMenuItem creditosToolStripMenuItem;
         private System.Windows.Forms.CheckBox sonido;
+        private System.Windows.Forms.ToolStripMenuItem ayudaToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem comoSeJuegaToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem modoMuerteSubitaToolStripMenuItem;
+        private System.Windows.Forms.Label cronometro;
     }
 }
 

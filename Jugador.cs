@@ -10,13 +10,11 @@ namespace Simon_Dice
     class Jugador
     {
         public string nombre;
-        public List<Color> listaColores;
         public int punt;
 
-        public Jugador(string nom, List<Color> lstColor, int puntu)
+        public Jugador(string nom, int puntu)
         {
             nombre = nom;
-            listaColores = lstColor;
             punt = puntu;
         }
     }

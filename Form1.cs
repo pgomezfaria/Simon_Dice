@@ -1,60 +1,49 @@
 ﻿using MySql.Data.MySqlClient;
-using OfficeOpenXml.FormulaParsing.Excel.Functions.DateTime;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Data.OleDb;
-using System.Data.SqlClient;
 using System.Drawing;
-using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Media;
 using System.Drawing.Drawing2D;
+using Timer = System.Windows.Forms.Timer;
 
 namespace Simon_Dice
 {
     public partial class Form1 : Form
     {
 
-        Button btnJugar, btnAceptar;
+        Button btnJugar, botonesJuego , btnAcept, secuencia;
         List<ToolStripMenuItem> listaTool = new List<ToolStripMenuItem>();
         SoundPlayer player, playSecuencia;
         List<Modo> modo;
         LabelTextBox labelText;
         Modo mod;
-        int y = 50;
-        int numBotones;
-        int numSecu;
-        bool nuevaPartida = true;
-        Button btnAcept;
-        bool flagChecked = false;
+        int y = 50, horas = 0, minutos=0, segundos=0, numBotones , numSecu , xstring = 170, ystring = 200 , pos , cont = 0, numJugador = 0, contSecuencias = 0;
+        bool nuevaPartida = true, flagPintar = true, flagSonido = true, flagMusica = true, flagChecked = false, banderaEliminados = false, banderaPulsarBoton = false, banderaSecuencia, flagsubita = false, flagañadir = false;
         static List<Jugador> jugadores;
         Jugador jugador;
-        List<Color> colores;
-        Button botonesJuego;
-        List<Color> coloresBoton;
+        List<Color>  coloresBoton;
         List<Button> listaBotones;
         List<Jugador> jugadoresEliminados;
-        Color color;
-        static int pos;
-        bool banderaEliminados = false;
-        static List<int> listaSecuencias;
-        static bool banderaPulsarBoton = false;
+        Color color;      
+        List<int> listaSecuencias;
         Thread hilo;
-        bool banderaSecuencia, flagsubita = false, flagañadir = false;
-        static int cont = 0, numJugador = 0, contSecuencias = 0;
-        bool flagSonido = true, flagMusica = true;
-        bool flagPintar = true;
-        int xstring = 170, ystring = 200;
-        static Button secuencia;
+        string[] lista;
         public Form1()
-        {
+        {           
             InitializeComponent();
-            
+
+            this.MouseWheel += Form_MouseWheel;
+            Timer timer = new Timer();
+            timer.Interval = 1000;
+            timer.Tick += new EventHandler(crono);
+            timer.Start();
+
+            lista = new string[3];
+            lista[0] = "nº jugadores";
+            lista[1] = "nº botones(3-8)";
+            lista[2] = "n º secuencias";
             player = new SoundPlayer();
             playSecuencia = new SoundPlayer();
             player.SoundLocation = AppDomain.CurrentDomain.BaseDirectory + "\\musica.wav";
@@ -96,6 +85,37 @@ namespace Simon_Dice
         }
 
         /// <summary>
+        /// Detecta el scroll con el ratón
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void Form_MouseWheel(object sender, MouseEventArgs e)
+        {
+            Refresh();
+        }
+
+        /// <summary>
+        /// Cronometro
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        public void crono(object sender, EventArgs e)
+        {
+            segundos++;
+            
+            if (segundos > 59)
+            {
+                minutos++;
+                segundos = 0;
+            }
+            if (minutos > 59){
+                horas++;
+                minutos = 0;
+            }
+            cronometro.Text = String.Format("{0:00}", horas) + ":" + String.Format("{0:00}", minutos) + ":" + String.Format("{0:00}",segundos);
+        }
+
+        /// <summary>
         /// Click del botón jugar
         /// </summary>
         /// <param name="sender"></param>
@@ -125,6 +145,7 @@ namespace Simon_Dice
             else
             {
                 Refresh();
+                nuevaPartida = true;
             }
             
             if (nuevaPartida)
@@ -133,6 +154,7 @@ namespace Simon_Dice
                 {
                     Controls[i].Visible = false;
                 }
+                cronometro.Visible = true;
                 musica.Visible = true;
                 sonido.Visible = true;
                 menuStrip1.Visible = true;
@@ -146,73 +168,54 @@ namespace Simon_Dice
                 secuencia = new Button();
 
                 checkBox1.Visible = false;
-                if (modo.Count > 0)
-                {              
-                    modo.Clear();
-                }
-                if (listaBotones.Count > 0)
-                {
-                    
-                        listaBotones.Clear();
-                    
-                }
-                if (jugadoresEliminados.Count > 0)
-                {
-                    jugadoresEliminados.Clear();
-                }
 
-                if (jugadores.Count > 0)
-                {
-                    jugadores.Clear();
-                }
-                if (listaBotones.Count > 0)
-                {
-                    listaBotones.Clear();
-                }
-                if (secuencia.Visible)
-                {
-                    secuencia.Visible = false;
-                }
-
+                eliminarListas();
 
                 checkBox1.Location = new Point(lbl.Location.X + 80, lbl.Location.Y);
                 checkBox1.Visible = true;
 
-                string[] lista = new string[3];
-                lista[0] = "nº jugadores";
-                lista[1] = "nº botones(3-8)";
-                lista[2] = "n º secuencias";
+                
                 btnJugar.Visible = false;
                 lbl.Visible = true;
 
-                y = lbl.Location.Y + 20;
-                for (int i = 0; i < 3; i++)
-                {
-                    labelText = new LabelTextBox();
-                    labelText.Size = new Size(20, 150);
-                    labelText.Location = new Point(lbl.Location.X - 20, y);
-                    labelText.Tamaño = 30;
-                    labelText.TextLbl = lista[i];
-                    labelText.Visible = true;
-                    labelText.Separacion = 10;
-                    labelText.TabIndex = 4;
-                    Controls.Add(labelText);
-                    y += 30;
-
-                    mod = new Modo(labelText, false);
-                    modo.Add(mod);
-                }
-
-                btnAceptar = new Button();
-                btnAceptar.Location = new Point(lbl.Location.X, modo[2].labelText.Location.Y + 30);
-                btnAceptar.Size = new Size(80, 30);
-                btnAceptar.Text = "Aceptar";
-                btnAceptar.Click += new System.EventHandler(this.btnAceptar_Click);
-                btnAceptar.Visible = true;
-                btnAceptar.TabIndex = 5;
-                Controls.Add(btnAceptar);
+                crearLabelTextBox(3, true);
+                creaBoton(2, false);
             }
             
+        }
+
+        /// <summary>
+        /// Eliminar el contenido de las listas
+        /// </summary>
+        public void eliminarListas()
+        {
+            if (modo.Count > 0)
+            {
+                modo.Clear();
+            }
+            if (listaBotones.Count > 0)
+            {
+
+                listaBotones.Clear();
+
+            }
+            if (jugadoresEliminados.Count > 0)
+            {
+                jugadoresEliminados.Clear();
+            }
+
+            if (jugadores.Count > 0)
+            {
+                jugadores.Clear();
+            }
+            if (listaBotones.Count > 0)
+            {
+                listaBotones.Clear();
+            }
+            if (secuencia.Visible)
+            {
+                secuencia.Visible = false;
+            }
         }
        
 
@@ -384,7 +387,7 @@ namespace Simon_Dice
                 {
                     modo[i].labelText.Visible = false;
                 }
-                btnAceptar.Visible = false;
+                btnAcept.Visible = false;
                 Jugadores();
             }
         }
@@ -408,14 +411,43 @@ namespace Simon_Dice
             y = 50;
             int num = Convert.ToInt32(modo[0].labelText.TextTxt);
             modo.Clear();
+
+            crearLabelTextBox(num, false);
+
+            //btnAcept = new Button();
+            //btnAcept.Location = new Point(lbl.Location.X, modo[num-1].labelText.Location.Y + 30);
+            //btnAcept.Size = new Size(80, 30);
+            //btnAcept.Text = "Aceptar";
+            //btnAcept.Click += new System.EventHandler(this.btnAcept_Click);
+            //btnAcept.Visible = true;
+            //Controls.Add(btnAcept);
+            creaBoton(num - 1, true);
+        }
+
+        /// <summary>
+        /// Crea el componente labelTextBox
+        /// </summary>
+        /// <param name="num">Numero de labelTextBox</param>
+        /// <param name="flag">Texto del componente</param>
+        public void crearLabelTextBox(int num, bool flag)
+        {
             int j = 1;
+            y = lbl.Location.Y + 20;
             for (int i = 0; i < num; i++)
             {
                 labelText = new LabelTextBox();
                 labelText.Size = new Size(20, 150);
                 labelText.Location = new Point(lbl.Location.X - 20, y);
                 labelText.Tamaño = 60;
-                labelText.TextLbl = "Jugador " + j;
+                if (flag)
+                {
+                    labelText.TextLbl = lista[i];
+                }
+                else
+                {
+                    labelText.TextLbl = "Jugador " + j;
+                }
+                
                 labelText.Visible = true;
                 labelText.Separacion = 10;
                 Controls.Add(labelText);
@@ -424,16 +456,32 @@ namespace Simon_Dice
                 modo.Add(mod);
                 j++;
             }
-
+        }
+        
+        /// <summary>
+        /// Crea un boton
+        /// </summary>
+        /// <param name="num">Posicion de la lista</param>
+        /// <param name="flag">Tipo de click que se quiere asociar</param>
+        public void creaBoton(int num, bool flag)
+        {
             btnAcept = new Button();
-            btnAcept.Location = new Point(lbl.Location.X, modo[num-1].labelText.Location.Y + 30);
+            btnAcept.Location = new Point(lbl.Location.X, modo[num].labelText.Location.Y + 30);
             btnAcept.Size = new Size(80, 30);
             btnAcept.Text = "Aceptar";
-            btnAcept.Click += new System.EventHandler(this.btnAcept_Click);
+            if (flag)
+            {
+                btnAcept.Click += new System.EventHandler(this.btnAcept_Click);
+            }
+            else
+            {
+                btnAcept.Click += new System.EventHandler(this.btnAceptar_Click);
+            }
+            
             btnAcept.Visible = true;
             Controls.Add(btnAcept);
         }
-        
+
         /// <summary>
         /// Click del botón aceptar
         /// </summary>
@@ -482,8 +530,7 @@ namespace Simon_Dice
 
             for (int i=0; i<modo.Count; i++)
             {
-                colores = new List<Color>();
-                jugador = new Jugador(modo[i].labelText.TextTxt, colores, 0);
+                jugador = new Jugador(modo[i].labelText.TextTxt, 0);
                 jugadores.Add(jugador);
                 modo[i].labelText.Visible = false;
             }
@@ -789,6 +836,27 @@ namespace Simon_Dice
                 flagSonido = false;
             }
         }
+
+        private void ComoSeJuegaToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            MuestraMensaje("Este juego es una adaptación del juego de mesa Simón dice. En este juego los jugadores deberán demostrar que tienen una buena memoria y seguir la lista de secuencias que saca el ordenador.", 0);
+        }
+
+        private void ModoMuerteSubitaToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            MuestraMensaje("A diferencia del modo clásico del juego, en este modo, son los propios jugadores los que crean la lista de secuencias y por lo tanto, compiten entre ellos", 0);
+        }
+
+        /// <summary>
+        /// Detecta el scroll con las barras de desplazamiento
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void Form1_Scroll(object sender, ScrollEventArgs e)
+        {
+            Refresh();
+        }
+
 
         /// <summary>
         /// Click de créditos de menú strip

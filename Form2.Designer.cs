@@ -45,12 +45,12 @@
             this.puntuacionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.fechaToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.rangoDToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.guardarPuntuacionesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
             // textBox1
             // 
-            this.textBox1.Enabled = false;
             this.textBox1.Location = new System.Drawing.Point(12, 27);
             this.textBox1.Multiline = true;
             this.textBox1.Name = "textBox1";
@@ -62,7 +62,8 @@
             // 
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.ordenarToolStripMenuItem,
-            this.buscarToolStripMenuItem});
+            this.buscarToolStripMenuItem,
+            this.guardarPuntuacionesToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Size = new System.Drawing.Size(353, 24);
@@ -162,30 +163,37 @@
             // jugadorToolStripMenuItem
             // 
             this.jugadorToolStripMenuItem.Name = "jugadorToolStripMenuItem";
-            this.jugadorToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.jugadorToolStripMenuItem.Size = new System.Drawing.Size(161, 22);
             this.jugadorToolStripMenuItem.Text = "Jugador";
             this.jugadorToolStripMenuItem.Click += new System.EventHandler(this.JugadorToolStripMenuItem_Click);
             // 
             // puntuacionToolStripMenuItem
             // 
             this.puntuacionToolStripMenuItem.Name = "puntuacionToolStripMenuItem";
-            this.puntuacionToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.puntuacionToolStripMenuItem.Size = new System.Drawing.Size(161, 22);
             this.puntuacionToolStripMenuItem.Text = "Puntuacion";
             this.puntuacionToolStripMenuItem.Click += new System.EventHandler(this.PuntuacionToolStripMenuItem_Click);
             // 
             // fechaToolStripMenuItem1
             // 
             this.fechaToolStripMenuItem1.Name = "fechaToolStripMenuItem1";
-            this.fechaToolStripMenuItem1.Size = new System.Drawing.Size(180, 22);
+            this.fechaToolStripMenuItem1.Size = new System.Drawing.Size(161, 22);
             this.fechaToolStripMenuItem1.Text = "Fecha";
             this.fechaToolStripMenuItem1.Click += new System.EventHandler(this.FechaToolStripMenuItem1_Click);
             // 
             // rangoDToolStripMenuItem
             // 
             this.rangoDToolStripMenuItem.Name = "rangoDToolStripMenuItem";
-            this.rangoDToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.rangoDToolStripMenuItem.Size = new System.Drawing.Size(161, 22);
             this.rangoDToolStripMenuItem.Text = "Rango de fechas";
             this.rangoDToolStripMenuItem.Click += new System.EventHandler(this.RangoFechasToolStripMenuItem_Click);
+            // 
+            // guardarPuntuacionesToolStripMenuItem
+            // 
+            this.guardarPuntuacionesToolStripMenuItem.Name = "guardarPuntuacionesToolStripMenuItem";
+            this.guardarPuntuacionesToolStripMenuItem.Size = new System.Drawing.Size(136, 20);
+            this.guardarPuntuacionesToolStripMenuItem.Text = "Guardar puntuaciones";
+            this.guardarPuntuacionesToolStripMenuItem.Click += new System.EventHandler(this.GuardarPuntuacionesToolStripMenuItem_Click);
             // 
             // Form2
             // 
@@ -225,5 +233,6 @@
         private System.Windows.Forms.ToolStripMenuItem puntuacionToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem fechaToolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem rangoDToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem guardarPuntuacionesToolStripMenuItem;
     }
 }
