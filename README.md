@@ -15,4 +15,4 @@
 
 -3 de noviembre: añadí al juego la opción de poder escuchar y silenciar la música y el sonido del juego. Por otra parte uso el onPaint para pintar círculos y un string. También encontré un error que había en el juego y lo corregí.
 
--10 de noviembre: añadí un cronómetro para saber cuánto tiempo se lleva jugado, en el menustrip añadí la opción ayuda y en las puntuaciones el usuario puede guardar las puntuaciones que tiene en el textbox. 
+-10 de noviembre: añadí un cronómetro para saber cuánto tiempo se lleva jugado, en el menustrip añadí la opción ayuda y en las puntuaciones el usuario puede guardar en un archivo las puntuaciones que tiene en el textbox. 
